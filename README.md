@@ -4,8 +4,11 @@
 * https://github.com/mtumilowicz/js-nodejs-websocket-stock-server
 * https://github.com/mtumilowicz/js-nodejs-websocket-chat
 
-* WebSocket is an event-driven, full-duplex asynchronous communications
-    channel
+* WebSocket is:
+    * an event-driven, 
+    * full-duplex (both directions) 
+    * asynchronous 
+    * communications channel
 * WebSocket uses HTTP as the initial transport mechanism, the communication
     does not end after a response is received by the client
 * long polling - server holds the request open until new data is 
