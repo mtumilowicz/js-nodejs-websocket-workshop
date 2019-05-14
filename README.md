@@ -9,6 +9,7 @@
     * full-duplex (both directions) 
     * asynchronous 
     * communications channel
+* provides real-time updates without hacks (like long pooling, http2 push notifications, etc.)
 * WebSocket uses HTTP as the initial transport mechanism, the communication
     does not end after a response is received by the client
 * long polling - server holds the request open until new data is 
