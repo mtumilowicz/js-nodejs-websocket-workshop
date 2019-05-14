@@ -1,5 +1,7 @@
 # js-nodejs-websocket
 
+* https://tools.ietf.org/html/rfc6455
+* https://www.amazon.com/WebSocket-Client-Server-Communications-Andrew-Lombardi-ebook/dp/B015D78JVQ
 * https://github.com/mtumilowicz/js-nodejs-websocket-echo-server
 * https://github.com/mtumilowicz/js-nodejs-websocket-stock-server
 * https://github.com/mtumilowicz/js-nodejs-websocket-chat
@@ -26,13 +28,10 @@
         * it means that connection is established
         * server is ready to send and receive messages                                                            
     * message
-        * fired when data is received through a websocket
-        * After you’ve established a connection to the WebSocket server, it will be available to
-          send messages to and receive messages
+        * use to carry data
     * error
         * fired when a connection with a websocket has been closed because of an error
-        * it can be assumed that after an error event the WebSocket connection
-          will be closed and a close event will be fired
+        * after an error event the WebSocket connection will be closed and a close event will be fired
     * close
         * fired when connection is closed
         * communication between client is over
