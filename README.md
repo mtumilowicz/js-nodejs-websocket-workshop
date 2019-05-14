@@ -10,21 +10,23 @@
     * asynchronous 
     * communications channel
 * provides real-time updates without hacks (like long pooling, http2 push notifications, etc.)
-* WebSocket uses HTTP as the initial transport mechanism, the communication
-    does not end after a response is received by the client
-* long polling - server holds the request open until new data is 
-                 available then sends it to the client. When the client receives the new information, it 
-                 immediately sends another request, and the operation is repeated.
-* exactly the opposite to typical HTTP request/response cycle
-* as long as the connection stays open, the client and server can exchange information asynchronously
-* full support for sending text and binary data
+* long polling
+    1. client sends request, receives response and immediately sends another request
+    1. server holds the request open
+    1. waiting for state change (new data emerges)
+    1. push response to the client
+    1. repeat
+* http2 push notifications - TODO
+* transport mechanism: HTTP, without ending the communication after a response is received by the client
+    * the client and server exchange data asynchronously (as long as the connection stays open)
+* supports text and binary data
 * four types of events
     * open
-        * fired after connection request and the handshake
+        * fired after connection request, after handshake
         * it means that connection is established
         * server is ready to send and receive messages                                                            
     * message
-        * fired when data is received through a websocket.
+        * fired when data is received through a websocket
         * After you’ve established a connection to the WebSocket server, it will be available to
           send messages to and receive messages
     * error
