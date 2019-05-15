@@ -79,6 +79,8 @@ the client may want or need it
     |Sec-WebSocket-Protocol     |No             |protocols the client would like to speak, ordered by preference   |
     |Sec-WebSocket-Extensions   |No             |extensions the client would like to speak   |
     
+    The request MAY include any other header fields, for example, cookies and/or authentication-related header fields
+    such as the |Authorization| header field, which are processed according to documents that define them
 ## details
 1. To _Establish a WebSocket Connection_, a client opens a connection and sends a handshake as defined above.
     * If /secure/ header is true, the client MUST perform a TLS handshake just after opening 
@@ -114,42 +116,18 @@ that it has selected that protocol
             * SHA-1 hash: 
             `0xb3 0x7a 0x4f 0x2c 0xc0 0x62 0x4f 0x16 0x90 0xf6 0x46 0x06 0xcf 0x38 0x59 0x45 0xb2 0xbe 0xc4 0xea`
             * base64-encoded "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
-* A client will need to
-     supply a /host/, /port/, /resource name/, and a /secure/ flag, which
-     are the components of a WebSocket URI as discussed in Section 3,
-     along with a list of /protocols/ and /extensions/ to be used
-     * Additionally, if the client is a web browser, it supplies /origin/
-* denial-of-service attack by just opening a large number of WebSocket connections to a remote host
-    * A server can further reduce the load on itself when attacked by pausing before closing the connection
-    * There is no limit to the number of established WebSocket
-             connections a client can have with a single remote host
-    * Servers can refuse to accept connections from hosts/IP addresses with an
-             excessive number of existing connections or disconnect resource-
-             hogging connections when suffering high load
-* Once a connection to the server has been established (including a
-     connection via a proxy or over a TLS-encrypted tunnel), the client 
-     MUST send an opening handshake to the server
-    * The handshake consists
-         of an HTTP Upgrade request, along with a list of required and
-         optional header fields
-        * The handshake MUST be a valid HTTP request
-        * the method of the request MUST be GET, and the HTTP version MUST be at least 1.1
-        * The request MUST contain an |Upgrade| header field whose value MUST include the "websocket" keyword
-        * The request MUST contain a |Connection| header field whose value MUST include the "Upgrade" token
-        * The request MUST include a header field with the name |Sec-WebSocket-Key|
-            * random numbers selected randomly for each connection
-        * The request MUST include a header field with the name |Origin| if the request is coming from a browser client
-        *  The request MUST include a header field with the name
-                  |Sec-WebSocket-Version|.  The value of this header field MUST be
-                  13
-        * The request MAY include a header field with the name
-                  |Sec-WebSocket-Protocol|.  If present, this value indicates one
-                  or more comma-separated subprotocol the client wishes to speak,
-                  ordered by preference
-        * The request MAY include any other header fields, for example,
-                  cookies and/or authentication-related header fields
-                  such as the |Authorization| header field, which are
-                  processed according to documents that define them
+* There is no limit to the number of established WebSocket connections a client can have with a single remote host.  
+Servers can refuse to accept connections from hosts/IP addresses with an excessive number of existing connections 
+or disconnect resource-hogging connections when suffering high load
+    * For example, in a web browser context, the client needs to consider the number of tabs the user has open 
+    in setting a limit to the number of simultaneous pending connections
+* A server can further reduce the
+         load on itself when attacked by pausing before closing the
+         connection, as that will reduce the rate at which the client
+         reconnects
+* Sec-WebSocket-Key
+    * random numbers selected randomly for each connection
+        
 * The client MUST validate the server's response as follows:
     * If the status code received from the server is not 101, the client handles the response per HTTP procedures
         * In
