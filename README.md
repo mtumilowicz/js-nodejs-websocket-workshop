@@ -195,27 +195,6 @@ or disconnect resource-hogging connections when suffering high load
         * communication between client is over
         * has two attributes, code and reason
         * either side may terminate the connection
-* The protocol has two parts:
-    1. handshake
-        * The handshake from the client looks as follows:
-            ```
-            GET /chat HTTP/1.1
-            Host: server.example.com
-            Upgrade: websocket
-            Connection: Upgrade
-            Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==
-            Origin: http://example.com
-            Sec-WebSocket-Protocol: chat, superchat
-            Sec-WebSocket-Version: 13
-            ```
-        * The handshake from the server looks as follows:
-            ```
-            HTTP/1.1 101 Switching Protocols
-            Upgrade: websocket
-            Connection: Upgrade
-            Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=
-            Sec-WebSocket-Protocol: chat
-            ```
     1. data transfer
         * Once the client and server have both sent their handshakes, and if
              the handshake was successful, then the data transfer part starts
@@ -234,8 +213,6 @@ or disconnect resource-hogging connections when suffering high load
                  application), and control frames (which are not intended to carry
                  data for the application but instead for protocol-level signaling,
                  such as to signal that the connection should be closed).
-* Sending the origin domain in the upgrade is so connections can be
-  restricted to prevent CSRF attacks similar to CORS for XMLHttpRequest
 # Closing Handshake
 * Either peer can send a control frame with data containing a specified
      control sequence to begin the closing handshake
@@ -281,7 +258,5 @@ or disconnect resource-hogging connections when suffering high load
          subprotocols could be implemented by servers simultaneously, with the
          server dynamically selecting which subprotocol to use based on the
          value sent by the client
-# Opening Handshake
-
 # 7.  Closing the Connection
 # 5.  Data Framing
