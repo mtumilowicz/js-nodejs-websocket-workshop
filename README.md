@@ -10,9 +10,8 @@
 # introduction
 * WebSocket is:
     * an event-driven, 
-    * full-duplex (both directions) 
-    * asynchronous 
-    * communications channel
+    * full-duplex (both directions),
+    * asynchronous communications channel
 * is an independent TCP-based protocol
     * single TCP connection for traffic in both directions
 * once the WebSocket handshake is finished, only the WebSocket protocol is used, not HTTP anymore
