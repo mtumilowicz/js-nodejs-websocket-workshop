@@ -120,6 +120,11 @@ that it has selected that protocol
             * SHA-1 hash: 
             `0xb3 0x7a 0x4f 0x2c 0xc0 0x62 0x4f 0x16 0x90 0xf6 0x46 0x06 0xcf 0x38 0x59 0x45 0xb2 0xbe 0xc4 0xea`
             * base64-encoded "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
+    * |origin| - if the server does not validate the origin, it will accept connections from anywhere
+    * If the server does not wish to accept this connection, it MUST return an appropriate HTTP error code
+      (e.g., 403 Forbidden) and abort the WebSocket handshake
+    * the server considers the WebSocket connection to be established and that the WebSocket connection is in the 
+      OPEN state and at this point, the server may begin sending (and receiving) data
 1. The client MUST validate the server's response as follows:
     * If the status code received from the server is not 101, the client handles the response per HTTP procedures
         * In particular, the client might perform authentication if it receives a 401 status code; 
@@ -142,9 +147,6 @@ that it has selected that protocol
 1. If the server's response is validated as provided for above, it is
          said that _The WebSocket Connection is Established_ and that the
          WebSocket Connection is in the OPEN state 
-        
-        
-        
         
         
         
@@ -177,30 +179,6 @@ or disconnect resource-hogging connections when suffering high load
          not send a handshake that matches the description below the server MUST stop
          processing the client's handshake and return an HTTP response with an
          appropriate error code (such as 400 Bad Request)
-* Sending the Server's Opening Handshake
-    * When a client establishes a WebSocket connection to a server, the
-         server MUST complete the following steps to accept the connection and
-         send the server's opening handshake
-        * if the connection is happening on an HTTPS (HTTP-over-TLS) port,
-                 perform a TLS handshake over the connection, If this fails then close the connection
-                 * otherwise, all further communication
-                          for the connection (including the server's handshake) MUST run
-                          through the encrypted tunnel
-        * The server can perform additional client authentication, for
-                 example, by returning a 401 status code with the corresponding
-                 |WWW-Authenticate| header field
-        * The server MAY redirect the client using a 3xx status code
-        * /origin/ - If the server does
-                               not validate the origin, it will accept connections from
-                               anywhere
-            * If the server does not wish to accept this
-                        connection, it MUST return an appropriate HTTP error code
-                        (e.g., 403 Forbidden) and abort the WebSocket handshake
-* the server considers
-     the WebSocket connection to be established and that the WebSocket
-     connection is in the OPEN state
-     * At this point, the server may begin
-          sending (and receiving) data
 
 * four types of events
     * open
