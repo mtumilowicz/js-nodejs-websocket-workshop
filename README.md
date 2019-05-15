@@ -16,20 +16,22 @@
     * single TCP connection for traffic in both directions
 * once the WebSocket handshake is finished, only the WebSocket protocol is used, not HTTP anymore
     * only relationship to HTTP is that its handshake is interpreted by HTTP servers as an Upgrade request
-* By default, the WebSocket Protocol uses port 80 for regular WebSocket connections and port 443 for 
+* by default, the WebSocket Protocol uses port 80 for regular WebSocket connections and port 443 for 
     WebSocket connections tunneled over Transport Layer Security (TLS)
 * supports text and binary data
 * provides real-time updates without hacks (like long pooling, http2 push notifications, etc.)
-    * long polling
-        1. server holds the request open
-        1. waiting for state change (new data emerges)
-        1. push response to the client
-        1. when client receives response - it immediately sends another request and whole process repeats
-        * main drawback: is not scalable: to maintain the session state for a given client, that state must either:
-            * be sharable among all servers behind a load balancer – significant architectural complexity
-            * or subsequent client requests within the same session must be routed to the same server to 
-            which their original  request was processed - contradiction of load-balancing
-    * http2 push notifications - TODO
+
+## digression
+* long polling
+    1. server holds the request open
+    1. waiting for state change (new data emerges)
+    1. push response to the client
+    1. when client receives response - it immediately sends another request and whole process repeats
+    * main drawback: is not scalable: to maintain the session state for a given client, that state must either:
+        * be sharable among all servers behind a load balancer – significant architectural complexity
+        * or subsequent client requests within the same session must be routed to the same server to 
+        which their original  request was processed - contradiction of load-balancing
+* http2 push notifications - TODO
     
 # Opening Handshake
 
