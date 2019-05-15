@@ -29,7 +29,14 @@
         request was processed - contradiction of load-balancing
 
 * http2 push notifications - TODO
-* transport mechanism: HTTP, without ending the communication after a response is received by the client
+* is an independent TCP-based protocol
+*  Its
+     only relationship to HTTP is that its handshake is interpreted by
+     HTTP servers as an Upgrade request
+* once the WebSocket handshake is finished, only the WebSocket protocol is used, not HTTP anymore
+* By default, the WebSocket Protocol uses port 80 for regular WebSocket
+     connections and port 443 for WebSocket connections tunneled over
+     Transport Layer Security (TLS)
 * single TCP connection for traffic in both directions
 * supports text and binary data
 * four types of events
@@ -131,3 +138,90 @@
      closed, a peer does not send any further data; after receiving a
      control frame indicating the connection should be closed, a peer
      discards any further data received
+* It's also designed in such a way that its
+     servers can share a port with HTTP servers, by having its handshake
+     be a valid HTTP Upgrade request
+* the intent of
+     WebSockets is to provide a relatively simple protocol that can
+     coexist with HTTP and deployed HTTP infrastructure (such as proxies)
+*  It is similarly intended to fail to establish a connection when data
+     from other protocols, especially HTTP, is sent to a WebSocket server,
+     for example, as might happen if an HTML "form" were submitted to a
+     WebSocket server.  
+     * This is primarily achieved by requiring that the
+     server prove that it read the handshake, which it can only do if the
+     handshake contains the appropriate parts, which can only be sent by a
+     WebSocket client
+     * In particular, at the time of writing of this
+          specification, fields starting with |Sec-| cannot be set by an
+          attacker from a web browser using only HTML and JavaScript APIs such
+          as XMLHttpRequest
+# subprotocols
+* The client can request that the server use a specific subprotocol by
+     including the |Sec-WebSocket-Protocol| field in its handshake.  If it
+     is specified, the server needs to include the same field and one of
+     the selected subprotocol values in its response for the connection to
+     be established.
+* For example, if Example Corporation were to create a
+     Chat subprotocol to be implemented by many servers around the Web,
+     they could name it "chat.example.com"
+    * If the Example Organization
+         called their competing subprotocol "chat.example.org", then the two
+         subprotocols could be implemented by servers simultaneously, with the
+         server dynamically selecting which subprotocol to use based on the
+         value sent by the client
+# Opening Handshake
+* To _Establish a WebSocket Connection_, a client opens a connection
+     and sends a handshake as defined in this section. 
+* A connection is defined to initially be in a CONNECTING state.
+* A client will need to
+     supply a /host/, /port/, /resource name/, and a /secure/ flag, which
+     are the components of a WebSocket URI as discussed in Section 3,
+     along with a list of /protocols/ and /extensions/ to be used
+     * Additionally, if the client is a web browser, it supplies /origin/
+* denial-of-service attack by just opening a large number of WebSocket connections to a remote host
+    * A server can further reduce the load on itself when attacked by pausing before closing the connection
+    * There is no limit to the number of established WebSocket
+             connections a client can have with a single remote host
+    * Servers can refuse to accept connections from hosts/IP addresses with an
+             excessive number of existing connections or disconnect resource-
+             hogging connections when suffering high load
+*  If /secure/ is true, the client MUST perform a TLS handshake over
+         the connection after opening the connection and before sending
+         the handshake data
+    * all further communication on this channel MUST run through the
+             encrypted tunnel
+* Once a connection to the server has been established (including a
+     connection via a proxy or over a TLS-encrypted tunnel), the client 
+     MUST send an opening handshake to the server
+    * The handshake consists
+         of an HTTP Upgrade request, along with a list of required and
+         optional header fields
+        * The handshake MUST be a valid HTTP request
+        * the method of the request MUST be GET, and the HTTP version MUST be at least 1.1
+        * The request MUST contain an |Upgrade| header field whose value MUST include the "websocket" keyword
+        * The request MUST contain a |Connection| header field whose value MUST include the "Upgrade" token
+        * The request MUST include a header field with the name |Sec-WebSocket-Key|
+            * random numbers selected randomly for each connection
+        * The request MUST include a header field with the name |Origin| if the request is coming from a browser client
+        *  The request MUST include a header field with the name
+                  |Sec-WebSocket-Version|.  The value of this header field MUST be
+                  13
+        * The request MAY include a header field with the name
+                  |Sec-WebSocket-Protocol|.  If present, this value indicates one
+                  or more comma-separated subprotocol the client wishes to speak,
+                  ordered by preference
+        * The request MAY include any other header fields, for example,
+                  cookies and/or authentication-related header fields
+                  such as the |Authorization| header field, which are
+                  processed according to documents that define them
+* Once the client's opening handshake has been sent, the client MUST
+     wait for a response from the server before sending any further data
+* The client MUST validate the server's response as follows:
+    * If the status code received from the server is not 101, the client handles the response per HTTP procedures
+        * In
+                 particular, the client might perform authentication if it
+                 receives a 401 status code; the server might redirect the client
+                 using a 3xx status code (but clients are not required to follow
+                 them)
+    * If the response lacks an |Upgrade| header field - the client MUST _Fail the WebSocket Connection_
