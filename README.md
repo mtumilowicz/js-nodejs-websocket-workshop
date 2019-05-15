@@ -121,14 +121,12 @@ that it has selected that protocol
     * If the status code received from the server is not 101, the client handles the response per HTTP procedures
         * In particular, the client might perform authentication if it receives a 401 status code; 
         the server might redirect the client using a 3xx status code (but clients are not required to follow them)
-    * [Opening handshake headers summary](#Opening-handshake-headers-summary)
-    * If the response lacks an |Upgrade| header field - the client MUST _Fail the WebSocket Connection_
-    * If the response lacks a |Connection| header field - the client MUST _Fail the WebSocket Connection_
-    * If the response lacks a |Sec-WebSocket-Accept| header field or the |Sec-WebSocket-Accept| contains a value other than the
-      base64-encoded SHA-1 of the concatenation of the |Sec-WebSocket-
-      Key| (as a string, not base64-decoded) with the string "258EAFA5-
-      E914-47DA-95CA-C5AB0DC85B11" - the client MUST _Fail the WebSocket Connection_
-    * If the response includes a |Sec-WebSocket-Extensions| header
+    * required headers according to: [Opening handshake headers summary](#Opening-handshake-headers-summary)
+    * If the `|Sec-WebSocket-Accept|` contains a value other than the
+      base64-encoded SHA-1 of the concatenation of the `|Sec-WebSocket-
+      Key|` (as a string, not base64-decoded) with the string `"258EAFA5-
+      E914-47DA-95CA-C5AB0DC85B11"` - the client MUST _Fail the WebSocket Connection_
+    * If the response includes a `|Sec-WebSocket-Extensions|` header
              field and this header field indicates the use of an extension
              that was not present in the client's handshake (the server has
              indicated an extension not requested by the client), the client
@@ -138,7 +136,9 @@ that it has selected that protocol
              not present in the client's handshake (the server has indicated a
              subprotocol not requested by the client), the client MUST _Fail
              the WebSocket Connection_    
-        
+1. If the server's response is validated as provided for above, it is
+         said that _The WebSocket Connection is Established_ and that the
+         WebSocket Connection is in the OPEN state 
         
         
         
@@ -160,33 +160,6 @@ or disconnect resource-hogging connections when suffering high load
          reconnects
 * Sec-WebSocket-Key
     * random numbers selected randomly for each connection
-        
-* The client MUST validate the server's response as follows:
-    * If the status code received from the server is not 101, the client handles the response per HTTP procedures
-        * In
-                 particular, the client might perform authentication if it
-                 receives a 401 status code; the server might redirect the client
-                 using a 3xx status code (but clients are not required to follow
-                 them)
-    * If the response lacks an |Upgrade| header field - the client MUST _Fail the WebSocket Connection_
-    * If the response lacks a |Connection| header field - the client MUST _Fail the WebSocket Connection_
-    * If the response lacks a |Sec-WebSocket-Accept| header field or the |Sec-WebSocket-Accept| contains a value other than the
-      base64-encoded SHA-1 of the concatenation of the |Sec-WebSocket-
-      Key| (as a string, not base64-decoded) with the string "258EAFA5-
-      E914-47DA-95CA-C5AB0DC85B11" - the client MUST _Fail the WebSocket Connection_
-    * If the response includes a |Sec-WebSocket-Extensions| header
-             field and this header field indicates the use of an extension
-             that was not present in the client's handshake (the server has
-             indicated an extension not requested by the client), the client
-             MUST _Fail the WebSocket Connection_
-    * If the response includes a |Sec-WebSocket-Protocol| header field
-             and this header field indicates the use of a subprotocol that was
-             not present in the client's handshake (the server has indicated a
-             subprotocol not requested by the client), the client MUST _Fail
-             the WebSocket Connection_
-    * If the server's response is validated as provided for above, it is
-         said that _The WebSocket Connection is Established_ and that the
-         WebSocket Connection is in the OPEN state
 * A data center might have a server that responds to WebSocket
      requests with an appropriate handshake and then passes the connection
      to another server to actually process the data frames.
