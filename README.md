@@ -66,21 +66,22 @@ the client may want or need it
      Connection: Upgrade
      Sec-WebSocket-Accept: lRpQzaMfn9PshDM89sErE1GVs2s=
      ```
-* Opening handshake headers summary
-    |Header                     |Required       |Value   |
-    |---                        |---            |---|
-    |Host                       |Yes            |server’s authority   |
-    |Upgrade                    |Yes            |websocket   |
-    |Connection                 |Yes            |Upgrade   |
-    |Sec-WebSocket-Key          |Yes            |base64-encoded value   |
-    |Sec-WebSocket-Version      |Yes            |13   |
-    |Sec-WebSocket-Accept       |Yes (server)   |must be present for the connection to be valid   |
-    |Origin                     |No             |sent by all browser clients   |
-    |Sec-WebSocket-Protocol     |No             |protocols the client would like to speak, ordered by preference   |
-    |Sec-WebSocket-Extensions   |No             |extensions the client would like to speak   |
-    
-    The request MAY include any other header fields, for example, cookies and/or authentication-related header fields
-    such as the |Authorization| header field, which are processed according to documents that define them
+### Opening handshake headers summary
+|Header                     |Required       |Value   |
+|---                        |---            |---|
+|Host                       |Yes            |server’s authority   |
+|Upgrade                    |Yes            |websocket   |
+|Connection                 |Yes            |Upgrade   |
+|Sec-WebSocket-Key          |Yes            |base64-encoded value   |
+|Sec-WebSocket-Version      |Yes            |13   |
+|Sec-WebSocket-Accept       |Yes (server)   |must be present for the connection to be valid   |
+|Origin                     |No             |sent by all browser clients   |
+|Sec-WebSocket-Protocol     |No             |protocols the client would like to speak, ordered by preference   |
+|Sec-WebSocket-Extensions   |No             |extensions the client would like to speak   |
+
+The request MAY include any other header fields, for example, cookies and/or authentication-related header fields
+such as the |Authorization| header field, which are processed according to documents that define them
+
 ## details
 1. To _Establish a WebSocket Connection_, a client opens a connection and sends a handshake as defined above.
     * If /secure/ header is true, the client MUST perform a TLS handshake just after opening 
@@ -116,6 +117,38 @@ that it has selected that protocol
             * SHA-1 hash: 
             `0xb3 0x7a 0x4f 0x2c 0xc0 0x62 0x4f 0x16 0x90 0xf6 0x46 0x06 0xcf 0x38 0x59 0x45 0xb2 0xbe 0xc4 0xea`
             * base64-encoded "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
+1. The client MUST validate the server's response as follows:
+    * If the status code received from the server is not 101, the client handles the response per HTTP procedures
+        * In particular, the client might perform authentication if it receives a 401 status code; 
+        the server might redirect the client using a 3xx status code (but clients are not required to follow them)
+    * [Opening handshake headers summary](#Opening-handshake-headers-summary)
+    * If the response lacks an |Upgrade| header field - the client MUST _Fail the WebSocket Connection_
+    * If the response lacks a |Connection| header field - the client MUST _Fail the WebSocket Connection_
+    * If the response lacks a |Sec-WebSocket-Accept| header field or the |Sec-WebSocket-Accept| contains a value other than the
+      base64-encoded SHA-1 of the concatenation of the |Sec-WebSocket-
+      Key| (as a string, not base64-decoded) with the string "258EAFA5-
+      E914-47DA-95CA-C5AB0DC85B11" - the client MUST _Fail the WebSocket Connection_
+    * If the response includes a |Sec-WebSocket-Extensions| header
+             field and this header field indicates the use of an extension
+             that was not present in the client's handshake (the server has
+             indicated an extension not requested by the client), the client
+             MUST _Fail the WebSocket Connection_
+    * If the response includes a |Sec-WebSocket-Protocol| header field
+             and this header field indicates the use of a subprotocol that was
+             not present in the client's handshake (the server has indicated a
+             subprotocol not requested by the client), the client MUST _Fail
+             the WebSocket Connection_    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 * There is no limit to the number of established WebSocket connections a client can have with a single remote host.  
 Servers can refuse to accept connections from hosts/IP addresses with an excessive number of existing connections 
 or disconnect resource-hogging connections when suffering high load
