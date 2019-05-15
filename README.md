@@ -203,6 +203,7 @@ that it has selected that protocol
 When closing an established connection (e.g., when sending a Close
    frame, after the opening handshake has completed), an endpoint MAY
    indicate a reason for closure
+   
 |Ranges         |Description   |
 |---            |---|
 |0-999          |not used   |
@@ -331,3 +332,4 @@ or disconnect resource-hogging connections when suffering high load
          server dynamically selecting which subprotocol to use based on the
          value sent by the client
 # 5.  Data Framing
+# 6.  Sending and Receiving Data
