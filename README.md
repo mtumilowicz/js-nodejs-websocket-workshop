@@ -27,7 +27,7 @@
 1. waiting for state change (new data emerges)
 1. push response to the client
 1. when client receives response - it immediately sends another request and whole process repeats
-* main drawback: is not scalable: to maintain the session state for a given client, that state must either:
+* it is not scalable: to maintain the session state for a given client, that state must either:
     * be sharable among all servers behind a load balancer – significant architectural complexity
     * or subsequent client requests within the same session must be routed to the same server to 
     which their original  request was processed - contradiction of load-balancing
