@@ -51,45 +51,44 @@
     Sec-WebSocket-Key: YTDTk0Cm9vtHE0HBnho4/Q==
     Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
     ```
-* |Sec-WebSocket-Protocol| 
-* server selects one or none of the acceptable protocols and echoes
-     that value in its handshake to indicate that it has selected that
-     protocol
-* the server has to prove to the client that it received the
-     client's WebSocket handshake, so that the server doesn't accept
-     connections that are not WebSocket connections
-    * This prevents an
-     attacker from tricking a WebSocket server by sending it carefully
-     crafted packets using XMLHttpRequest or a form
-     submission
-* To prove that the handshake was received, the server has to take two
-     pieces of information and combine them to form a response
+* WebSocket server's handshake is an HTTP Switching Protocols response
      ```
      HTTP/1.1 101 Switching Protocols
      Upgrade: websocket
      Connection: Upgrade
      Sec-WebSocket-Accept: lRpQzaMfn9PshDM89sErE1GVs2s=
      ```
-    * The first
-         piece of information comes from the |Sec-WebSocket-Key| header field
-        * the server has to take the value (as present
-             in the header field, e.g., the base64-encoded version minus
-             any leading and trailing whitespace) and concatenate this with the
-             Globally Unique Identifier (GUID)
-        * "dGhlIHNhbXBsZSBub25jZQ==", the server
-             would concatenate the string "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
-             to form the string "dGhlIHNhbXBsZSBub25jZQ==258EAFA5-E914-47DA-95CA-
-             C5AB0DC85B11"
-        * SHA-1 hash of this then base64-encoded "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="  
-        * This value would then be echoed in
-             the |Sec-WebSocket-Accept| header field
-        * |Sec-WebSocket-Accept| header field indicates whether
-             the server is willing to accept the connection
-    * HTTP/1.1 101 Switching Protocols
 ## details
-* To _Establish a WebSocket Connection_, a client opens a connection
-     and sends a handshake as defined in this section. 
-* A connection is defined to initially be in a CONNECTING state.
+1. To _Establish a WebSocket Connection_, a client opens a connection and sends a handshake as defined above.
+    * If /secure/ header is true, the client MUST perform a TLS handshake over the connection after opening 
+    the connection and before sending the handshake data
+          * all further communication on this channel MUST run through the encrypted tunnel 
+1. A connection is defined to initially be in a CONNECTING state.
+1. once the client's opening handshake has been sent, the client MUST wait for a response from the server 
+   before sending any further data
+1. server selects one or none of the acceptable protocols and echoes that value in its handshake to indicate 
+that it has selected that protocol
+    * the server has to prove to the client that it received the client's WebSocket handshake, so that 
+    the server does not accept connections that are not WebSocket connections
+        * This prevents an attacker from tricking a WebSocket server by sending it carefully crafted packets 
+        using XMLHttpRequest or a form submission
+    * To prove that the handshake was received, the server has to take two pieces of information and combine 
+    them to form a response
+            * The first
+                 piece of information comes from the |Sec-WebSocket-Key| header field
+                * the server has to take the value (as present
+                     in the header field, e.g., the base64-encoded version minus
+                     any leading and trailing whitespace) and concatenate this with the
+                     Globally Unique Identifier (GUID)
+                * "dGhlIHNhbXBsZSBub25jZQ==", the server
+                     would concatenate the string "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
+                     to form the string "dGhlIHNhbXBsZSBub25jZQ==258EAFA5-E914-47DA-95CA-
+                     C5AB0DC85B11"
+                * SHA-1 hash of this then base64-encoded "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="  
+                * This value would then be echoed in
+                     the |Sec-WebSocket-Accept| header field
+                * |Sec-WebSocket-Accept| header field indicates whether
+                     the server is willing to accept the connection
 * A client will need to
      supply a /host/, /port/, /resource name/, and a /secure/ flag, which
      are the components of a WebSocket URI as discussed in Section 3,
@@ -102,11 +101,6 @@
     * Servers can refuse to accept connections from hosts/IP addresses with an
              excessive number of existing connections or disconnect resource-
              hogging connections when suffering high load
-*  If /secure/ is true, the client MUST perform a TLS handshake over
-         the connection after opening the connection and before sending
-         the handshake data
-    * all further communication on this channel MUST run through the
-             encrypted tunnel
 * Once a connection to the server has been established (including a
      connection via a proxy or over a TLS-encrypted tunnel), the client 
      MUST send an opening handshake to the server
@@ -131,8 +125,6 @@
                   cookies and/or authentication-related header fields
                   such as the |Authorization| header field, which are
                   processed according to documents that define them
-* Once the client's opening handshake has been sent, the client MUST
-     wait for a response from the server before sending any further data
 * The client MUST validate the server's response as follows:
     * If the status code received from the server is not 101, the client handles the response per HTTP procedures
         * In
