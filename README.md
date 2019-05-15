@@ -305,4 +305,5 @@
      connection is in the OPEN state
      * At this point, the server may begin
           sending (and receiving) data
+# 7.  Closing the Connection
 # 5.  Data Framing
