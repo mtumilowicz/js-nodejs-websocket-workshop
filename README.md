@@ -206,9 +206,25 @@ When closing an established connection (e.g., when sending a Close
 |Ranges         |Description   |
 |---            |---|
 |0-999          |not used   |
-|1000-2999      |reserved  by protocol   |
+|1000-2999      |reserved  by protocol, pre-defined status codes   |
 |3000-3999      |reserved by libraries, frameworks, and applications, registered with IANA   |
 |4000-4999      |reserved for private use, not registered   |
+
+|Code   |Description   |
+|---    |---|
+|1000   |normal closure - the purpose for which the connection was established has been fulfilled   |
+|1001   |endpoint is "going away" - ex. server going down or a browser having navigated away from a page   |
+|1002   |protocol error   |
+|1003   |received a type of data it cannot accept - ex. text vs binary   |
+|1004   |not yet defined   |
+|1005   |MUST NOT be set as a status code - it is designated for use in applications expecting a status code to indicate that no status code was actually present   |
+|1006   |MUST NOT be set as a status code - It is designated for use in applications expecting a status code to indicate that the connection was closed abnormally, e.g., without sending or receiving a Close control fram   |
+|1007   |received data within a message that was not consistent with the type of the message - ex. non-UTF-8 data within a text message   |
+|1008   |received a message that violates its policy   |
+|1009   |message that is too big to process   |
+|1010   |(client) is terminating the connection because it has expected the server to negotiate one or more extension, but the server didn't return them in the response message of the WebSocket handshake Note that this status code is not used by the server, because it can fail the WebSocket handshake instead   |
+|1011   |server is terminating the connection because it encountered an unexpected condition that prevented it from fulfilling the request   |
+|1015   |failure to perform a TLS handshake (e.g., the server certificate can't be verified).   |
         
 * There is no limit to the number of established WebSocket connections a client can have with a single remote host.  
 Servers can refuse to accept connections from hosts/IP addresses with an excessive number of existing connections 
