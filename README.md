@@ -33,7 +33,11 @@
     * or subsequent client requests within the same session must be routed to the same server to 
     which their original  request was processed - contradiction of load-balancing
     
-### http2 push notifications - TODO
+### http2 push notifications
+* is a concept which allows the server to respond to a request with more than one response
+* data is still sent only in response to an initial request
+* it’s impossible to push data based purely on the server deciding that 
+the client may want or need it
     
 # Opening Handshake
 
