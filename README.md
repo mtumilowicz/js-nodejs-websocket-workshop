@@ -58,6 +58,7 @@ the client may want or need it
     Sec-WebSocket-Key: YTDTk0Cm9vtHE0HBnho4/Q==
     Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
     ```
+    
 * WebSocket server's handshake is an HTTP Switching Protocols response
      ```
      HTTP/1.1 101 Switching Protocols
@@ -65,15 +66,35 @@ the client may want or need it
      Connection: Upgrade
      Sec-WebSocket-Accept: lRpQzaMfn9PshDM89sErE1GVs2s=
      ```
+* Opening handshake headers summary
+    |Header                     |Required   |Value   |
+    |---                        |---|---|
+    |Host                       |Yes   |server’s authority   |
+    |Upgrade                    |Yes   |websocket   |
+    |Connection                 |Yes   |Upgrade   |
+    |Sec-WebSocket-Key          |Yes   |base64-encoded value   |
+    |Sec-WebSocket-Version      |Yes   |13   |
+    |Sec-WebSocket-Accept       |Yes (server)   |must be present for the connection to be valid   |
+    |Origin                     |No   |sent by all browser clients   |
+    |Sec-WebSocket-Protocol     |No   |protocols the client would like to speak, ordered by preference   |
+    |Sec-WebSocket-Extensions   |No   |extensions the client would like to speak   |
+    
 ## details
 1. To _Establish a WebSocket Connection_, a client opens a connection and sends a handshake as defined above.
-    * If /secure/ header is true, the client MUST perform a TLS handshake over the connection after opening 
+    * If /secure/ header is true, the client MUST perform a TLS handshake just after opening 
     the connection and before sending the handshake data
           * all further communication on this channel MUST run through the encrypted tunnel 
 1. A connection is defined to initially be in a CONNECTING state.
+    
+    |State        |Value    |Description   |
+    |---          |---      |---|
+    |CONNECTING   |0        |The connection is not yet open.   |
+    |OPEN         |1        |The connection is open and ready to communicate.   |
+    |CLOSING      |2        |The connection is in the process of closing.   |
+    |CLOSED       |3        |The connection is closed or couldn’t be opened.   |
 1. once the client's opening handshake has been sent, the client MUST wait for a response from the server 
    before sending any further data
-1. server selects one or none of the acceptable protocols and echoes that value in its handshake to indicate 
+1. server selects one or none of the acceptable protocols () and echoes that value in its handshake to indicate 
 that it has selected that protocol
     * the server has to prove to the client that it received the client's WebSocket handshake, so that 
     the server does not accept connections that are not WebSocket connections
@@ -255,6 +276,8 @@ that it has selected that protocol
                  application), and control frames (which are not intended to carry
                  data for the application but instead for protocol-level signaling,
                  such as to signal that the connection should be closed).
+* Sending the origin domain in the upgrade is so connections can be
+  restricted to prevent CSRF attacks similar to CORS for XMLHttpRequest
 # Closing Handshake
 * Either peer can send a control frame with data containing a specified
      control sequence to begin the closing handshake
