@@ -146,13 +146,69 @@ that it has selected that protocol
              the WebSocket Connection_    
 1. If the server's response is validated as provided for above, it is
          said that _The WebSocket Connection is Established_ and that the
-         WebSocket Connection is in the OPEN state 
+         WebSocket Connection is in the OPEN state
+         
+# Closing the Connection
         
-        
-        
-        
-        
-        
+## overview
+* To _Close the WebSocket Connection_, an endpoint closes the
+     underlying TCP connection
+* The underlying TCP connection, in most normal cases, SHOULD be closed
+     first by the server
+* endpoint MUST send a Close control frame with |code| and whose |reason|
+* Upon either sending or receiving a Close control frame, it is said
+     that _The WebSocket Closing Handshake is Started_ and that the
+     WebSocket connection is in the CLOSING state
+* When the underlying TCP connection is closed, it is said that _The
+     WebSocket Connection is Closed_ and that the WebSocket connection is
+     in the CLOSED state
+* If the TCP connection was closed after the
+     WebSocket closing handshake was completed, the WebSocket connection
+     is said to have been closed _cleanly_
+*  A closing of
+     the WebSocket connection may be initiated by either endpoint,
+     potentially simultaneously
+* Two endpoints may not agree on the value of _The WebSocket
+     Connection Close Code_
+     * As an example, if the remote endpoint sent a
+          Close frame but the local application has not yet read the data
+          containing the Close frame from its socket's receive buffer, and the
+          local application independently decided to close the connection and
+          send a Close frame, both endpoints will have sent and received a
+          Close frame and will not send further Close frames
+     * Each endpoint
+          will see the status code sent by the other end as _The WebSocket
+          Connection Close Code_
+* each deployed client experiences an
+     abnormal closure and immediately and persistently tries to reconnect,
+     the server may experience what amounts to a denial-of-service attack
+     by a large number of clients trying to reconnect.  The end result of
+     such a scenario could be that the service is unable to recover in a
+     timely manner or recovery is made much more difficult
+     * o prevent this, clients SHOULD use some form of backoff when trying
+          to reconnect after abnormal closures as described in this section.
+          * the first reconnect attempt SHOULD be delayed by a random amount of
+               time.  The parameters by which this random delay is chosen are left
+               to the client to decide; a value chosen randomly between 0 and 5
+               seconds is a reasonable initial delay though clients MAY choose a
+               different interval from which to select a delay length based on
+               implementation experience and particular application.
+          * Should the first reconnect attempt fail, subsequent reconnect
+               attempts SHOULD be delayed by increasingly longer amounts of time,
+               using a method such as truncated binary exponential backoff.
+* Servers MAY close the WebSocket connection whenever desired.  Clients
+     SHOULD NOT close the WebSocket connection arbitrarily
+## details        
+### status codes
+When closing an established connection (e.g., when sending a Close
+   frame, after the opening handshake has completed), an endpoint MAY
+   indicate a reason for closure
+|Ranges         |Description   |
+|---            |---|
+|0-999          |not used   |
+|1000-2999      |reserved  by protocol   |
+|3000-3999      |reserved by libraries, frameworks, and applications, registered with IANA   |
+|4000-4999      |reserved for private use, not registered   |
         
 * There is no limit to the number of established WebSocket connections a client can have with a single remote host.  
 Servers can refuse to accept connections from hosts/IP addresses with an excessive number of existing connections 
