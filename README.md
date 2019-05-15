@@ -7,38 +7,87 @@
 * https://github.com/mtumilowicz/js-nodejs-websocket-stock-server
 * https://github.com/mtumilowicz/js-nodejs-websocket-chat
 
+# introduction
 * WebSocket is:
     * an event-driven, 
     * full-duplex (both directions) 
     * asynchronous 
     * communications channel
-* provides real-time updates without hacks (like long pooling, http2 push notifications, etc.)
-* long polling
-    1. client sends request, receives response and immediately sends another request
-    1. server holds the request open
-    1. waiting for state change (new data emerges)
-    1. push response to the client
-    1. repeat
-* long polling drawbacks
-    * the client-side script is forced to maintain a mapping from the outgoing connections to the 
-    incoming connection to track replies
-    * To maintain the session state for a given client, that state must either:
-        * be sharable among all servers behind a load balancer – a task with significant architectural 
-        complexity
-        * or subsequent client requests within the same session must be routed to the same server to which their original 
-        request was processed - contradiction of load-balancing
-
-* http2 push notifications - TODO
 * is an independent TCP-based protocol
-*  Its
-     only relationship to HTTP is that its handshake is interpreted by
-     HTTP servers as an Upgrade request
+    * single TCP connection for traffic in both directions
 * once the WebSocket handshake is finished, only the WebSocket protocol is used, not HTTP anymore
-* By default, the WebSocket Protocol uses port 80 for regular WebSocket
-     connections and port 443 for WebSocket connections tunneled over
-     Transport Layer Security (TLS)
-* single TCP connection for traffic in both directions
+    * only relationship to HTTP is that its handshake is interpreted by HTTP servers as an Upgrade request
+* By default, the WebSocket Protocol uses port 80 for regular WebSocket connections and port 443 for 
+    WebSocket connections tunneled over Transport Layer Security (TLS)
 * supports text and binary data
+* provides real-time updates without hacks (like long pooling, http2 push notifications, etc.)
+    * long polling
+        1. server holds the request open
+        1. waiting for state change (new data emerges)
+        1. push response to the client
+        1. when client receives response - it immediately sends another request and whole process repeats
+        * main drawback: is not scalable: to maintain the session state for a given client, that state must either:
+            * be sharable among all servers behind a load balancer – significant architectural complexity
+            * or subsequent client requests within the same session must be routed to the same server to 
+            which their original  request was processed - contradiction of load-balancing
+    * http2 push notifications - TODO
+    
+# Opening Handshake
+
+## overview
+* WebSocket client's handshake is an HTTP Upgrade request
+    ```
+    GET ws://localhost:8080/ HTTP/1.1
+    Host: localhost:8080
+    Connection: Upgrade
+    Pragma: no-cache
+    Cache-Control: no-cache
+    Upgrade: websocket
+    Origin: http://localhost:63342
+    Sec-WebSocket-Version: 13
+    User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36
+    Accept-Encoding: gzip, deflate, br
+    Accept-Language: en,pl;q=0.9,en-US;q=0.8,pt;q=0.7
+    Sec-WebSocket-Key: YTDTk0Cm9vtHE0HBnho4/Q==
+    Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
+    ```
+* |Sec-WebSocket-Protocol| 
+* server selects one or none of the acceptable protocols and echoes
+     that value in its handshake to indicate that it has selected that
+     protocol
+* the server has to prove to the client that it received the
+     client's WebSocket handshake, so that the server doesn't accept
+     connections that are not WebSocket connections
+    * This prevents an
+     attacker from tricking a WebSocket server by sending it carefully
+     crafted packets using XMLHttpRequest or a form
+     submission
+* To prove that the handshake was received, the server has to take two
+     pieces of information and combine them to form a response
+     ```
+     HTTP/1.1 101 Switching Protocols
+     Upgrade: websocket
+     Connection: Upgrade
+     Sec-WebSocket-Accept: lRpQzaMfn9PshDM89sErE1GVs2s=
+     ```
+    * The first
+         piece of information comes from the |Sec-WebSocket-Key| header field
+        * the server has to take the value (as present
+             in the header field, e.g., the base64-encoded version minus
+             any leading and trailing whitespace) and concatenate this with the
+             Globally Unique Identifier (GUID)
+        * "dGhlIHNhbXBsZSBub25jZQ==", the server
+             would concatenate the string "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
+             to form the string "dGhlIHNhbXBsZSBub25jZQ==258EAFA5-E914-47DA-95CA-
+             C5AB0DC85B11"
+        * SHA-1 hash of this then base64-encoded "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="  
+        * This value would then be echoed in
+             the |Sec-WebSocket-Accept| header field
+        * |Sec-WebSocket-Accept| header field indicates whether
+             the server is willing to accept the connection
+    * HTTP/1.1 101 Switching Protocols
+## details
+
 * four types of events
     * open
         * fired after connection request, after handshake
@@ -93,38 +142,6 @@
                  application), and control frames (which are not intended to carry
                  data for the application but instead for protocol-level signaling,
                  such as to signal that the connection should be closed).
-* Opening Handshake
-    * WebSocket client's
-         handshake is an HTTP Upgrade request
-    * |Sec-WebSocket-Protocol| 
-    * server selects one or none of the acceptable protocols and echoes
-         that value in its handshake to indicate that it has selected that
-         protocol
-    * the server has to prove to the client that it received the
-         client's WebSocket handshake, so that the server doesn't accept
-         connections that are not WebSocket connections
-        * This prevents an
-         attacker from tricking a WebSocket server by sending it carefully
-         crafted packets using XMLHttpRequest or a form
-         submission
-    * To prove that the handshake was received, the server has to take two
-         pieces of information and combine them to form a response
-        * The first
-             piece of information comes from the |Sec-WebSocket-Key| header field
-            * the server has to take the value (as present
-                 in the header field, e.g., the base64-encoded version minus
-                 any leading and trailing whitespace) and concatenate this with the
-                 Globally Unique Identifier (GUID)
-            * "dGhlIHNhbXBsZSBub25jZQ==", the server
-                 would concatenate the string "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
-                 to form the string "dGhlIHNhbXBsZSBub25jZQ==258EAFA5-E914-47DA-95CA-
-                 C5AB0DC85B11"
-            * SHA-1 hash of this then base64-encoded "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="  
-            * This value would then be echoed in
-                 the |Sec-WebSocket-Accept| header field
-            * |Sec-WebSocket-Accept| header field indicates whether
-                 the server is willing to accept the connection
-        * HTTP/1.1 101 Switching Protocols
 # Closing Handshake
 * Either peer can send a control frame with data containing a specified
      control sequence to begin the closing handshake
