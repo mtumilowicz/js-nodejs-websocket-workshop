@@ -73,22 +73,19 @@ that it has selected that protocol
         * This prevents an attacker from tricking a WebSocket server by sending it carefully crafted packets 
         using XMLHttpRequest or a form submission
     * To prove that the handshake was received, the server has to take two pieces of information and combine 
-    them to form a response
-            * The first
-                 piece of information comes from the |Sec-WebSocket-Key| header field
-                * the server has to take the value (as present
-                     in the header field, e.g., the base64-encoded version minus
-                     any leading and trailing whitespace) and concatenate this with the
-                     Globally Unique Identifier (GUID)
-                * "dGhlIHNhbXBsZSBub25jZQ==", the server
-                     would concatenate the string "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
-                     to form the string "dGhlIHNhbXBsZSBub25jZQ==258EAFA5-E914-47DA-95CA-
-                     C5AB0DC85B11"
-                * SHA-1 hash of this then base64-encoded "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="  
-                * This value would then be echoed in
-                     the |Sec-WebSocket-Accept| header field
-                * |Sec-WebSocket-Accept| header field indicates whether
-                     the server is willing to accept the connection
+    them to form a response:
+        * concat |Sec-WebSocket-Key| and GUID: "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
+            * why such a GUID? because it is unlikely to be used by network endpoints that do not understand 
+            the WebSocket Protocol
+        * then SHA-1 hash
+        * then base64-encoded
+        * this value would then be echoed in the |Sec-WebSocket-Accept| header field
+        * example:
+            * "dGhlIHNhbXBsZSBub25jZQ=="
+            * concat with GUID: "dGhlIHNhbXBsZSBub25jZQ==258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
+            * SHA-1 hash: 
+            `0xb3 0x7a 0x4f 0x2c 0xc0 0x62 0x4f 0x16 0x90 0xf6 0x46 0x06 0xcf 0x38 0x59 0x45 0xb2 0xbe 0xc4 0xea`
+            * base64-encoded "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
 * A client will need to
      supply a /host/, /port/, /resource name/, and a /secure/ flag, which
      are the components of a WebSocket URI as discussed in Section 3,
