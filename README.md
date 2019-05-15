@@ -67,17 +67,17 @@ the client may want or need it
      Sec-WebSocket-Accept: lRpQzaMfn9PshDM89sErE1GVs2s=
      ```
 * Opening handshake headers summary
-    |Header                     |Required   |Value   |
-    |---                        |---|---|
-    |Host                       |Yes   |server’s authority   |
-    |Upgrade                    |Yes   |websocket   |
-    |Connection                 |Yes   |Upgrade   |
-    |Sec-WebSocket-Key          |Yes   |base64-encoded value   |
-    |Sec-WebSocket-Version      |Yes   |13   |
+    |Header                     |Required       |Value   |
+    |---                        |---            |---|
+    |Host                       |Yes            |server’s authority   |
+    |Upgrade                    |Yes            |websocket   |
+    |Connection                 |Yes            |Upgrade   |
+    |Sec-WebSocket-Key          |Yes            |base64-encoded value   |
+    |Sec-WebSocket-Version      |Yes            |13   |
     |Sec-WebSocket-Accept       |Yes (server)   |must be present for the connection to be valid   |
-    |Origin                     |No   |sent by all browser clients   |
-    |Sec-WebSocket-Protocol     |No   |protocols the client would like to speak, ordered by preference   |
-    |Sec-WebSocket-Extensions   |No   |extensions the client would like to speak   |
+    |Origin                     |No             |sent by all browser clients   |
+    |Sec-WebSocket-Protocol     |No             |protocols the client would like to speak, ordered by preference   |
+    |Sec-WebSocket-Extensions   |No             |extensions the client would like to speak   |
     
 ## details
 1. To _Establish a WebSocket Connection_, a client opens a connection and sends a handshake as defined above.
