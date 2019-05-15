@@ -225,3 +225,67 @@
                  using a 3xx status code (but clients are not required to follow
                  them)
     * If the response lacks an |Upgrade| header field - the client MUST _Fail the WebSocket Connection_
+    * If the response lacks a |Connection| header field - the client MUST _Fail the WebSocket Connection_
+    * If the response lacks a |Sec-WebSocket-Accept| header field or the |Sec-WebSocket-Accept| contains a value other than the
+      base64-encoded SHA-1 of the concatenation of the |Sec-WebSocket-
+      Key| (as a string, not base64-decoded) with the string "258EAFA5-
+      E914-47DA-95CA-C5AB0DC85B11" - the client MUST _Fail the WebSocket Connection_
+    * If the response includes a |Sec-WebSocket-Extensions| header
+             field and this header field indicates the use of an extension
+             that was not present in the client's handshake (the server has
+             indicated an extension not requested by the client), the client
+             MUST _Fail the WebSocket Connection_
+    * If the response includes a |Sec-WebSocket-Protocol| header field
+             and this header field indicates the use of a subprotocol that was
+             not present in the client's handshake (the server has indicated a
+             subprotocol not requested by the client), the client MUST _Fail
+             the WebSocket Connection_
+    * If the server's response is validated as provided for above, it is
+         said that _The WebSocket Connection is Established_ and that the
+         WebSocket Connection is in the OPEN state
+* A data center might have a server that responds to WebSocket
+     requests with an appropriate handshake and then passes the connection
+     to another server to actually process the data frames.
+     * For the
+          purposes of this specification, the "server" is the combination of
+          both computers
+* Reading the Client's Opening Handshake
+    *  When a client starts a WebSocket connection, it sends its part of the
+         opening handshake
+    * If
+         the server, while reading the handshake, finds that the client did
+         not send a handshake that matches the description below the server MUST stop
+         processing the client's handshake and return an HTTP response with an
+         appropriate error code (such as 400 Bad Request)
+* Sending the Server's Opening Handshake
+    * When a client establishes a WebSocket connection to a server, the
+         server MUST complete the following steps to accept the connection and
+         send the server's opening handshake
+        * if the connection is happening on an HTTPS (HTTP-over-TLS) port,
+                 perform a TLS handshake over the connection, If this fails then close the connection
+                 * otherwise, all further communication
+                          for the connection (including the server's handshake) MUST run
+                          through the encrypted tunnel
+        * The server can perform additional client authentication, for
+                 example, by returning a 401 status code with the corresponding
+                 |WWW-Authenticate| header field
+        * The server MAY redirect the client using a 3xx status code
+        * /origin/ - If the server does
+                               not validate the origin, it will accept connections from
+                               anywhere
+            * If the server does not wish to accept this
+                        connection, it MUST return an appropriate HTTP error code
+                        (e.g., 403 Forbidden) and abort the WebSocket handshake
+* If the server chooses to accept the incoming connection, it MUST
+         reply with a valid HTTP response indicating the following
+         * 101 response code, HTTP/1.1 101
+                                         Switching Protocols
+         * An |Upgrade| header field with value "websocket"
+         * A |Connection| header field with value "Upgrade"
+         * A |Sec-WebSocket-Accept| header field
+* the server considers
+     the WebSocket connection to be established and that the WebSocket
+     connection is in the OPEN state
+     * At this point, the server may begin
+          sending (and receiving) data
+# 5.  Data Framing
