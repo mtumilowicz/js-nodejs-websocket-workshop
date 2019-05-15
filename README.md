@@ -330,5 +330,4 @@ or disconnect resource-hogging connections when suffering high load
          subprotocols could be implemented by servers simultaneously, with the
          server dynamically selecting which subprotocol to use based on the
          value sent by the client
-# 7.  Closing the Connection
 # 5.  Data Framing
