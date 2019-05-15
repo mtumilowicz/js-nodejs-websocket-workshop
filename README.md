@@ -87,107 +87,6 @@
              the server is willing to accept the connection
     * HTTP/1.1 101 Switching Protocols
 ## details
-
-* four types of events
-    * open
-        * fired after connection request, after handshake
-        * it means that connection is established
-        * server is ready to send and receive messages                                                            
-    * message
-        * use to carry data
-    * error
-        * fired when a connection with a websocket has been closed because of an error
-        * after an error event the WebSocket connection will be closed and a close event will be fired
-    * close
-        * fired when connection is closed
-        * communication between client is over
-        * has two attributes, code and reason
-        * either side may terminate the connection
-* The protocol has two parts:
-    1. handshake
-        * The handshake from the client looks as follows:
-            ```
-            GET /chat HTTP/1.1
-            Host: server.example.com
-            Upgrade: websocket
-            Connection: Upgrade
-            Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==
-            Origin: http://example.com
-            Sec-WebSocket-Protocol: chat, superchat
-            Sec-WebSocket-Version: 13
-            ```
-        * The handshake from the server looks as follows:
-            ```
-            HTTP/1.1 101 Switching Protocols
-            Upgrade: websocket
-            Connection: Upgrade
-            Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=
-            Sec-WebSocket-Protocol: chat
-            ```
-    1. data transfer
-        * Once the client and server have both sent their handshakes, and if
-             the handshake was successful, then the data transfer part starts
-        * This is a two-way communication channel where each side can,
-             independently from the other, send data at will
-        * After a successful handshake, clients and servers transfer data back
-             and forth in conceptual units referred to in this specification as
-             "messages"
-            * On the wire, a message is composed of one or more frames
-            * The WebSocket message does not necessarily correspond to a
-                 particular network layer framing, as a fragmented message may be
-                 coalesced or split by an intermediary
-            * there are
-                 types for textual data (which is interpreted as UTF-8
-                 text), binary data (whose interpretation is left up to the
-                 application), and control frames (which are not intended to carry
-                 data for the application but instead for protocol-level signaling,
-                 such as to signal that the connection should be closed).
-# Closing Handshake
-* Either peer can send a control frame with data containing a specified
-     control sequence to begin the closing handshake
-* Upon receiving such a frame, the other peer sends a
-     Close frame in response, if it hasn't already sent one
-* Upon
-     receiving _that_ control frame, the first peer then closes the
-     connection, safe in the knowledge that no further data is
-     forthcoming
-* After sending a control frame indicating the connection should be
-     closed, a peer does not send any further data; after receiving a
-     control frame indicating the connection should be closed, a peer
-     discards any further data received
-* It's also designed in such a way that its
-     servers can share a port with HTTP servers, by having its handshake
-     be a valid HTTP Upgrade request
-* the intent of
-     WebSockets is to provide a relatively simple protocol that can
-     coexist with HTTP and deployed HTTP infrastructure (such as proxies)
-*  It is similarly intended to fail to establish a connection when data
-     from other protocols, especially HTTP, is sent to a WebSocket server,
-     for example, as might happen if an HTML "form" were submitted to a
-     WebSocket server.  
-     * This is primarily achieved by requiring that the
-     server prove that it read the handshake, which it can only do if the
-     handshake contains the appropriate parts, which can only be sent by a
-     WebSocket client
-     * In particular, at the time of writing of this
-          specification, fields starting with |Sec-| cannot be set by an
-          attacker from a web browser using only HTML and JavaScript APIs such
-          as XMLHttpRequest
-# subprotocols
-* The client can request that the server use a specific subprotocol by
-     including the |Sec-WebSocket-Protocol| field in its handshake.  If it
-     is specified, the server needs to include the same field and one of
-     the selected subprotocol values in its response for the connection to
-     be established.
-* For example, if Example Corporation were to create a
-     Chat subprotocol to be implemented by many servers around the Web,
-     they could name it "chat.example.com"
-    * If the Example Organization
-         called their competing subprotocol "chat.example.org", then the two
-         subprotocols could be implemented by servers simultaneously, with the
-         server dynamically selecting which subprotocol to use based on the
-         value sent by the client
-# Opening Handshake
 * To _Establish a WebSocket Connection_, a client opens a connection
      and sends a handshake as defined in this section. 
 * A connection is defined to initially be in a CONNECTING state.
@@ -305,5 +204,107 @@
      connection is in the OPEN state
      * At this point, the server may begin
           sending (and receiving) data
+
+* four types of events
+    * open
+        * fired after connection request, after handshake
+        * it means that connection is established
+        * server is ready to send and receive messages                                                            
+    * message
+        * use to carry data
+    * error
+        * fired when a connection with a websocket has been closed because of an error
+        * after an error event the WebSocket connection will be closed and a close event will be fired
+    * close
+        * fired when connection is closed
+        * communication between client is over
+        * has two attributes, code and reason
+        * either side may terminate the connection
+* The protocol has two parts:
+    1. handshake
+        * The handshake from the client looks as follows:
+            ```
+            GET /chat HTTP/1.1
+            Host: server.example.com
+            Upgrade: websocket
+            Connection: Upgrade
+            Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==
+            Origin: http://example.com
+            Sec-WebSocket-Protocol: chat, superchat
+            Sec-WebSocket-Version: 13
+            ```
+        * The handshake from the server looks as follows:
+            ```
+            HTTP/1.1 101 Switching Protocols
+            Upgrade: websocket
+            Connection: Upgrade
+            Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=
+            Sec-WebSocket-Protocol: chat
+            ```
+    1. data transfer
+        * Once the client and server have both sent their handshakes, and if
+             the handshake was successful, then the data transfer part starts
+        * This is a two-way communication channel where each side can,
+             independently from the other, send data at will
+        * After a successful handshake, clients and servers transfer data back
+             and forth in conceptual units referred to in this specification as
+             "messages"
+            * On the wire, a message is composed of one or more frames
+            * The WebSocket message does not necessarily correspond to a
+                 particular network layer framing, as a fragmented message may be
+                 coalesced or split by an intermediary
+            * there are
+                 types for textual data (which is interpreted as UTF-8
+                 text), binary data (whose interpretation is left up to the
+                 application), and control frames (which are not intended to carry
+                 data for the application but instead for protocol-level signaling,
+                 such as to signal that the connection should be closed).
+# Closing Handshake
+* Either peer can send a control frame with data containing a specified
+     control sequence to begin the closing handshake
+* Upon receiving such a frame, the other peer sends a
+     Close frame in response, if it hasn't already sent one
+* Upon
+     receiving _that_ control frame, the first peer then closes the
+     connection, safe in the knowledge that no further data is
+     forthcoming
+* After sending a control frame indicating the connection should be
+     closed, a peer does not send any further data; after receiving a
+     control frame indicating the connection should be closed, a peer
+     discards any further data received
+* It's also designed in such a way that its
+     servers can share a port with HTTP servers, by having its handshake
+     be a valid HTTP Upgrade request
+* the intent of
+     WebSockets is to provide a relatively simple protocol that can
+     coexist with HTTP and deployed HTTP infrastructure (such as proxies)
+*  It is similarly intended to fail to establish a connection when data
+     from other protocols, especially HTTP, is sent to a WebSocket server,
+     for example, as might happen if an HTML "form" were submitted to a
+     WebSocket server.  
+     * This is primarily achieved by requiring that the
+     server prove that it read the handshake, which it can only do if the
+     handshake contains the appropriate parts, which can only be sent by a
+     WebSocket client
+     * In particular, at the time of writing of this
+          specification, fields starting with |Sec-| cannot be set by an
+          attacker from a web browser using only HTML and JavaScript APIs such
+          as XMLHttpRequest
+# subprotocols
+* The client can request that the server use a specific subprotocol by
+     including the |Sec-WebSocket-Protocol| field in its handshake.  If it
+     is specified, the server needs to include the same field and one of
+     the selected subprotocol values in its response for the connection to
+     be established.
+* For example, if Example Corporation were to create a
+     Chat subprotocol to be implemented by many servers around the Web,
+     they could name it "chat.example.com"
+    * If the Example Organization
+         called their competing subprotocol "chat.example.org", then the two
+         subprotocols could be implemented by servers simultaneously, with the
+         server dynamically selecting which subprotocol to use based on the
+         value sent by the client
+# Opening Handshake
+
 # 7.  Closing the Connection
 # 5.  Data Framing
