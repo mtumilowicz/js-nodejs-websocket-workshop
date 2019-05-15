@@ -97,7 +97,10 @@ such as the |Authorization| header field, which are processed according to docum
     |CLOSED       |3        |The connection is closed or couldn’t be opened.   |
 1. once the client's opening handshake has been sent, the client MUST wait for a response from the server 
    before sending any further data
-1. server selects one or none of the acceptable protocols () and echoes that value in its handshake to indicate 
+1. If the server chooses to accept the incoming connection, it MUST reply with a valid HTTP response:
+    * 101 response code, HTTP/1.1 101 Switching Protocols
+    * required headers according to: [Opening handshake headers summary](#Opening-handshake-headers-summary)
+1. server selects one or none of the acceptable protocols and echoes that value in its handshake to indicate 
 that it has selected that protocol
     * the server has to prove to the client that it received the client's WebSocket handshake, so that 
     the server does not accept connections that are not WebSocket connections
@@ -193,13 +196,6 @@ or disconnect resource-hogging connections when suffering high load
             * If the server does not wish to accept this
                         connection, it MUST return an appropriate HTTP error code
                         (e.g., 403 Forbidden) and abort the WebSocket handshake
-* If the server chooses to accept the incoming connection, it MUST
-         reply with a valid HTTP response indicating the following
-         * 101 response code, HTTP/1.1 101
-                                         Switching Protocols
-         * An |Upgrade| header field with value "websocket"
-         * A |Connection| header field with value "Upgrade"
-         * A |Sec-WebSocket-Accept| header field
 * the server considers
      the WebSocket connection to be established and that the WebSocket
      connection is in the OPEN state
