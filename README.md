@@ -123,6 +123,7 @@ that it has selected that protocol
       base64-encoded SHA-1 of the concatenation of the `|Sec-WebSocket-
       Key|` (as a string, not base64-decoded) with the string `"258EAFA5-
       E914-47DA-95CA-C5AB0DC85B11"` - the client MUST _Fail the WebSocket Connection_
+        * The `|Sec-WebSocket-Key|` is used to filter unintended requests
         * GUID - it is unlikely (possible, put with very small probability) that the server which is not 
         aware of Websockets will use it - it just ensures that server understands websockets protocol
         * prevent clients accidentally requesting websockets upgrade not expecting it (say, by adding 
