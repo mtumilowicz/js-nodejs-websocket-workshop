@@ -17,6 +17,11 @@
     * single TCP connection for traffic in both directions
 * once the WebSocket handshake is finished, only the WebSocket protocol is used, not HTTP anymore
     * only relationship to HTTP is that its handshake is interpreted by HTTP servers as an Upgrade request
+* the intent of WebSockets is to provide a relatively simple protocol that can coexist with HTTP and 
+deployed HTTP infrastructure (such as proxies)
+* It's also designed in such a way that its
+     servers can share a port with HTTP servers, by having its handshake
+     be a valid HTTP Upgrade request
 * by default, the WebSocket Protocol uses port 80 for regular WebSocket connections and port 443 for 
     WebSocket connections tunneled over Transport Layer Security (TLS)
 * supports text and binary data
@@ -133,36 +138,23 @@ that it has selected that protocol
          WebSocket Connection is in the OPEN state
          
 # Closing the Connection
-        
 ## overview
-* to _Close the WebSocket Connection_, an endpoint closes the
-     underlying TCP connection
-* the underlying TCP connection, in most normal cases, SHOULD be closed
-     first by the server
-* If at any point the underlying transport layer connection is
-     unexpectedly lost, the client MUST _Fail the WebSocket Connection_.
-* when a server
-     is instructed to _Close the WebSocket Connection_ it SHOULD initiate
-     a TCP Close immediately, and when a client is instructed to do the
-     same, it SHOULD wait for a TCP Close from the server
-* endpoint MUST send a Close control frame with |code| and |reason|
-* upon either sending or receiving a Close control frame, it is said
-     that _The WebSocket Closing Handshake is Started_ and that the
-     WebSocket connection is in the CLOSING state
-* Once an endpoint has both sent and
-     received a Close control frame, that endpoint SHOULD _Close the
-     WebSocket Connection_
-* when the underlying TCP connection is closed, it is said that _The
-     WebSocket Connection is Closed_ and that the WebSocket connection is
-     in the CLOSED state
+1. A closing of the WebSocket connection may be initiated by either endpoint (client or the server),
+     potentially simultaneously
+1. endpoint MUST send a Close control frame with |code| and |reason|
+1. Once an endpoint has both sent and received a Close control frame, that endpoint SHOULD 
+_Close the WebSocket Connection_
+## details
+* to _Close the WebSocket Connection_, an endpoint closes the underlying TCP connection
+* the underlying TCP connection, in most normal cases, SHOULD be closed first by the server
+* when a server is instructed to _Close the WebSocket Connection_ it SHOULD initiate a TCP Close 
+immediately, and when a client is instructed to do the same, it SHOULD wait for a TCP Close from the server
+* upon either sending or receiving a Close control frame, it is said that 
+_The WebSocket Closing Handshake is Started_ and that the WebSocket connection is in the CLOSING state
+* when the underlying TCP connection is closed, it is said that _The WebSocket Connection is Closed_ 
+and that the WebSocket connection is in the CLOSED state
     * If the TCP connection was closed after the WebSocket closing handshake 
     was completed, the WebSocket connection is said to have been closed _cleanly_
-    * If the WebSocket connection could not be established, it is also said
-         that _The WebSocket Connection is Closed_, but not _cleanly_
-* If this Close control frame contains no status code, _The WebSocket
-     Connection Close Code_ is considered to be 1005
-*  A closing of the WebSocket connection may be initiated by either endpoint (client or the server),
-     potentially simultaneously
 * Two endpoints may not agree on the value of _The WebSocket Connection Close Code_
      * As an example, if the remote endpoint sent a
           Close frame but the local application has not yet read the data
@@ -311,12 +303,6 @@ or disconnect resource-hogging connections when suffering high load
      closed, a peer does not send any further data; after receiving a
      control frame indicating the connection should be closed, a peer
      discards any further data received
-* It's also designed in such a way that its
-     servers can share a port with HTTP servers, by having its handshake
-     be a valid HTTP Upgrade request
-* the intent of
-     WebSockets is to provide a relatively simple protocol that can
-     coexist with HTTP and deployed HTTP infrastructure (such as proxies)
 *  It is similarly intended to fail to establish a connection when data
      from other protocols, especially HTTP, is sent to a WebSocket server,
      for example, as might happen if an HTML "form" were submitted to a
