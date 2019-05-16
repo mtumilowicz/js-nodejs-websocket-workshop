@@ -129,6 +129,8 @@ that it has selected that protocol
         * prevent clients accidentally requesting websockets upgrade not expecting it (say, by adding 
         corresponding headers manually and then expecting smth else). Sec-WebSocket-Key and other related 
         headers are prohibited to be set using setRequestHeader method in browsers
+        * Imagine a transparent reverse-proxy server watching HTTP traffic go by. If it doesn't understand WS, it 
+        could mistakenly cache a WS handshake and reply with a useless 101 to the next client
     * If the response includes a `|Sec-WebSocket-Extensions|` header
              field and this header field indicates the use of an extension
              that was not present in the client's handshake (the server has
