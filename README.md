@@ -151,25 +151,35 @@ that it has selected that protocol
 # Closing the Connection
         
 ## overview
-* To _Close the WebSocket Connection_, an endpoint closes the
+* to _Close the WebSocket Connection_, an endpoint closes the
      underlying TCP connection
-* The underlying TCP connection, in most normal cases, SHOULD be closed
+* the underlying TCP connection, in most normal cases, SHOULD be closed
      first by the server
-* endpoint MUST send a Close control frame with |code| and whose |reason|
-* Upon either sending or receiving a Close control frame, it is said
+* If at any point the underlying transport layer connection is
+     unexpectedly lost, the client MUST _Fail the WebSocket Connection_.
+* when a server
+     is instructed to _Close the WebSocket Connection_ it SHOULD initiate
+     a TCP Close immediately, and when a client is instructed to do the
+     same, it SHOULD wait for a TCP Close from the server
+* endpoint MUST send a Close control frame with |code| and |reason|
+* upon either sending or receiving a Close control frame, it is said
      that _The WebSocket Closing Handshake is Started_ and that the
      WebSocket connection is in the CLOSING state
-* When the underlying TCP connection is closed, it is said that _The
+* Once an endpoint has both sent and
+     received a Close control frame, that endpoint SHOULD _Close the
+     WebSocket Connection_
+* when the underlying TCP connection is closed, it is said that _The
      WebSocket Connection is Closed_ and that the WebSocket connection is
      in the CLOSED state
-* If the TCP connection was closed after the
-     WebSocket closing handshake was completed, the WebSocket connection
-     is said to have been closed _cleanly_
-*  A closing of
-     the WebSocket connection may be initiated by either endpoint,
+    * If the TCP connection was closed after the WebSocket closing handshake 
+    was completed, the WebSocket connection is said to have been closed _cleanly_
+    * If the WebSocket connection could not be established, it is also said
+         that _The WebSocket Connection is Closed_, but not _cleanly_
+* If this Close control frame contains no status code, _The WebSocket
+     Connection Close Code_ is considered to be 1005
+*  A closing of the WebSocket connection may be initiated by either endpoint (client or the server),
      potentially simultaneously
-* Two endpoints may not agree on the value of _The WebSocket
-     Connection Close Code_
+* Two endpoints may not agree on the value of _The WebSocket Connection Close Code_
      * As an example, if the remote endpoint sent a
           Close frame but the local application has not yet read the data
           containing the Close frame from its socket's receive buffer, and the
@@ -185,7 +195,7 @@ that it has selected that protocol
      by a large number of clients trying to reconnect.  The end result of
      such a scenario could be that the service is unable to recover in a
      timely manner or recovery is made much more difficult
-     * o prevent this, clients SHOULD use some form of backoff when trying
+     * to prevent this, clients SHOULD use some form of backoff when trying
           to reconnect after abnormal closures as described in this section.
           * the first reconnect attempt SHOULD be delayed by a random amount of
                time.  The parameters by which this random delay is chosen are left
