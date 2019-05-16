@@ -236,6 +236,24 @@ When closing an established connection (e.g., when sending a Close
 |1010   |(client) is terminating the connection because it has expected the server to negotiate one or more extension, but the server didn't return them in the response message of the WebSocket handshake Note that this status code is not used by the server, because it can fail the WebSocket handshake instead   |
 |1011   |server is terminating the connection because it encountered an unexpected condition that prevented it from fulfilling the request   |
 |1015   |failure to perform a TLS handshake (e.g., the server certificate can't be verified).   |
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
         
 * There is no limit to the number of established WebSocket connections a client can have with a single remote host.  
 Servers can refuse to accept connections from hosts/IP addresses with an excessive number of existing connections 
