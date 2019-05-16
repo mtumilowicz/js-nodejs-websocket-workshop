@@ -24,14 +24,14 @@
 ## digression
 ### long polling
 1. server holds the request open
-1. waiting for state change (new data emerges)
+1. waiting for a state change (e.g. new data emerges)
 1. push response to the client
 1. when client receives response - it immediately sends another request and whole process repeats
 
-* it is not scalable: to maintain the session state for a given client, that state must either:
-    * be sharable among all servers behind a load balancer – significant architectural complexity
+* drawback - it is not scalable: to maintain the session state for a given client, that state must either:
+    * must be sharable among all servers behind a load balancer – significant architectural complexity
     * or subsequent client requests within the same session must be routed to the same server to 
-    which their original  request was processed - contradiction of load-balancing
+    which their original request was processed - contradiction of load-balancing
     
 ### http2 push notifications
 * is a concept which allows the server to respond to a request with more than one response
@@ -58,7 +58,6 @@ the client may want or need it
     Sec-WebSocket-Key: YTDTk0Cm9vtHE0HBnho4/Q==
     Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
     ```
-    
 * WebSocket server's handshake is an HTTP Switching Protocols response
      ```
      HTTP/1.1 101 Switching Protocols
@@ -83,10 +82,11 @@ The request MAY include any other header fields, for example, cookies and/or aut
 such as the |Authorization| header field, which are processed according to documents that define them
 
 ## details
+### client
 1. To _Establish a WebSocket Connection_, a client opens a connection and sends a handshake as defined above.
-    * If /secure/ header is true, the client MUST perform a TLS handshake just after opening 
-    the connection and before sending the handshake data
-          * all further communication on this channel MUST run through the encrypted tunnel 
+    * If |secure| header is true, the client MUST perform a TLS handshake just after opening the connection 
+    and before sending the handshake data
+        * all further communication on this channel MUST run through the encrypted tunnel 
 1. A connection is defined to initially be in a CONNECTING state.
     
     |State        |Value    |Description   |
@@ -97,34 +97,18 @@ such as the |Authorization| header field, which are processed according to docum
     |CLOSED       |3        |The connection is closed or couldn’t be opened.   |
 1. once the client's opening handshake has been sent, the client MUST wait for a response from the server 
    before sending any further data
+### server
 1. If the server chooses to accept the incoming connection, it MUST reply with a valid HTTP response:
     * 101 response code, HTTP/1.1 101 Switching Protocols
     * required headers according to: [Opening handshake headers summary](#Opening-handshake-headers-summary)
 1. server selects one or none of the acceptable protocols and echoes that value in its handshake to indicate 
 that it has selected that protocol
-    * the server has to prove to the client that it received the client's WebSocket handshake, so that 
-    the server does not accept connections that are not WebSocket connections
-        * This prevents an attacker from tricking a WebSocket server by sending it carefully crafted packets 
-        using XMLHttpRequest or a form submission
-    * To prove that the handshake was received, the server has to take two pieces of information and combine 
-    them to form a response:
-        * concat |Sec-WebSocket-Key| and GUID: "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
-            * why such a GUID? because it is unlikely to be used by network endpoints that do not understand 
-            the WebSocket Protocol
-        * then SHA-1 hash
-        * then base64-encoded
-        * this value would then be echoed in the |Sec-WebSocket-Accept| header field
-        * example:
-            * "dGhlIHNhbXBsZSBub25jZQ=="
-            * concat with GUID: "dGhlIHNhbXBsZSBub25jZQ==258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
-            * SHA-1 hash: 
-            `0xb3 0x7a 0x4f 0x2c 0xc0 0x62 0x4f 0x16 0x90 0xf6 0x46 0x06 0xcf 0x38 0x59 0x45 0xb2 0xbe 0xc4 0xea`
-            * base64-encoded "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
     * |origin| - if the server does not validate the origin, it will accept connections from anywhere
     * If the server does not wish to accept this connection, it MUST return an appropriate HTTP error code
       (e.g., 403 Forbidden) and abort the WebSocket handshake
-    * the server considers the WebSocket connection to be established and that the WebSocket connection is in the 
-      OPEN state and at this point, the server may begin sending (and receiving) data
+    * otherwise the server considers the WebSocket connection to be established and that the WebSocket connection 
+    is in the OPEN state and at this point, the server may begin sending (and receiving) data
+### client
 1. The client MUST validate the server's response as follows:
     * If the status code received from the server is not 101, the client handles the response per HTTP procedures
         * In particular, the client might perform authentication if it receives a 401 status code; 
