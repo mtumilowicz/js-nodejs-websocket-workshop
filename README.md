@@ -123,6 +123,11 @@ that it has selected that protocol
       base64-encoded SHA-1 of the concatenation of the `|Sec-WebSocket-
       Key|` (as a string, not base64-decoded) with the string `"258EAFA5-
       E914-47DA-95CA-C5AB0DC85B11"` - the client MUST _Fail the WebSocket Connection_
+        * GUID - it is unlikely (possible, put with very small probability) that the server which is not 
+        aware of Websockets will use it - it just ensures that server understands websockets protocol
+        * prevent clients accidentally requesting websockets upgrade not expecting it (say, by adding 
+        corresponding headers manually and then expecting smth else). Sec-WebSocket-Key and other related 
+        headers are prohibited to be set using setRequestHeader method in browsers
     * If the response includes a `|Sec-WebSocket-Extensions|` header
              field and this header field indicates the use of an extension
              that was not present in the client's handshake (the server has
@@ -303,18 +308,6 @@ or disconnect resource-hogging connections when suffering high load
      closed, a peer does not send any further data; after receiving a
      control frame indicating the connection should be closed, a peer
      discards any further data received
-*  It is similarly intended to fail to establish a connection when data
-     from other protocols, especially HTTP, is sent to a WebSocket server,
-     for example, as might happen if an HTML "form" were submitted to a
-     WebSocket server.  
-     * This is primarily achieved by requiring that the
-     server prove that it read the handshake, which it can only do if the
-     handshake contains the appropriate parts, which can only be sent by a
-     WebSocket client
-     * In particular, at the time of writing of this
-          specification, fields starting with |Sec-| cannot be set by an
-          attacker from a web browser using only HTML and JavaScript APIs such
-          as XMLHttpRequest
 # subprotocols
 * The client can request that the server use a specific subprotocol by
      including the |Sec-WebSocket-Protocol| field in its handshake.  If it
