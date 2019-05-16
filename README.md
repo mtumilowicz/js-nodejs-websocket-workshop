@@ -76,7 +76,7 @@ the client may want or need it
 |Host                       |Yes            |server’s authority   |
 |Upgrade                    |Yes            |websocket   |
 |Connection                 |Yes            |Upgrade   |
-|Sec-WebSocket-Key          |Yes            |base64-encoded value   |
+|Sec-WebSocket-Key          |Yes            |random base64-encoded value   |
 |Sec-WebSocket-Version      |Yes            |13   |
 |Sec-WebSocket-Accept       |Yes (server)   |must be present for the connection to be valid   |
 |Origin                     |No             |sent by all browser clients   |
