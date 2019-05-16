@@ -11,6 +11,7 @@
 * WebSocket is:
     * an event-driven, 
     * full-duplex (both directions),
+        * provides it without hacks (like long pooling, http2 push notifications, etc.)
     * asynchronous communications channel
 * is an independent TCP-based protocol
     * single TCP connection for traffic in both directions
@@ -19,7 +20,6 @@
 * by default, the WebSocket Protocol uses port 80 for regular WebSocket connections and port 443 for 
     WebSocket connections tunneled over Transport Layer Security (TLS)
 * supports text and binary data
-* provides real-time updates without hacks (like long pooling, http2 push notifications, etc.)
 
 ## digression
 ### long polling
