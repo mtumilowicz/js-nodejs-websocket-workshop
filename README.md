@@ -147,52 +147,36 @@ that it has selected that protocol
          
 # Closing the Connection
 ## overview
-1. A closing of the WebSocket connection may be initiated by either endpoint (client or the server),
-     potentially simultaneously
+1. A closing of the WebSocket connection may be initiated by either endpoint (client or the server) - 
+potentially simultaneously
 1. endpoint MUST send a Close control frame with |code| and |reason|
+1. Upon receiving such a frame, the other peer sends a Close frame in response, if it hasn't already sent one
+1. upon either sending or receiving a Close control frame, it is said that 
+   _The WebSocket Closing Handshake is Started_ and that the WebSocket connection is in the CLOSING state
 1. Once an endpoint has both sent and received a Close control frame, that endpoint SHOULD 
 _Close the WebSocket Connection_
+1. to _Close the WebSocket Connection_, an endpoint closes the underlying TCP connection
+    * the underlying TCP connection, in most normal cases, SHOULD be closed first by the server
+1. when the underlying TCP connection is closed, it is said that _The WebSocket Connection is Closed_ 
+   and that the WebSocket connection is in the CLOSED state
+   * If the TCP connection was closed after the WebSocket closing handshake 
+       was completed, the WebSocket connection is said to have been closed _cleanly_
 ## details
-* to _Close the WebSocket Connection_, an endpoint closes the underlying TCP connection
-* the underlying TCP connection, in most normal cases, SHOULD be closed first by the server
-* when a server is instructed to _Close the WebSocket Connection_ it SHOULD initiate a TCP Close 
-immediately, and when a client is instructed to do the same, it SHOULD wait for a TCP Close from the server
-* upon either sending or receiving a Close control frame, it is said that 
-_The WebSocket Closing Handshake is Started_ and that the WebSocket connection is in the CLOSING state
-* when the underlying TCP connection is closed, it is said that _The WebSocket Connection is Closed_ 
-and that the WebSocket connection is in the CLOSED state
-    * If the TCP connection was closed after the WebSocket closing handshake 
-    was completed, the WebSocket connection is said to have been closed _cleanly_
+* After sending a control frame indicating the connection should be
+     closed, a peer does not send any further data; after receiving a
+     control frame indicating the connection should be closed, a peer
+     discards any further data received
 * Two endpoints may not agree on the value of _The WebSocket Connection Close Code_
-     * As an example, if the remote endpoint sent a
-          Close frame but the local application has not yet read the data
-          containing the Close frame from its socket's receive buffer, and the
-          local application independently decided to close the connection and
+     * e.g.,
+        * remote endpoint sent a Close frame 
+        * but the local application has not yet read the data
+          containing the Close frame from its socket's receive buffer, 
+        * and the local application independently decided to close the connection and
           send a Close frame, both endpoints will have sent and received a
           Close frame and will not send further Close frames
-     * Each endpoint
-          will see the status code sent by the other end as _The WebSocket
-          Connection Close Code_
-* each deployed client experiences an
-     abnormal closure and immediately and persistently tries to reconnect,
-     the server may experience what amounts to a denial-of-service attack
-     by a large number of clients trying to reconnect.  The end result of
-     such a scenario could be that the service is unable to recover in a
-     timely manner or recovery is made much more difficult
-     * to prevent this, clients SHOULD use some form of backoff when trying
-          to reconnect after abnormal closures as described in this section.
-          * the first reconnect attempt SHOULD be delayed by a random amount of
-               time.  The parameters by which this random delay is chosen are left
-               to the client to decide; a value chosen randomly between 0 and 5
-               seconds is a reasonable initial delay though clients MAY choose a
-               different interval from which to select a delay length based on
-               implementation experience and particular application.
-          * Should the first reconnect attempt fail, subsequent reconnect
-               attempts SHOULD be delayed by increasingly longer amounts of time,
-               using a method such as truncated binary exponential backoff.
-* Servers MAY close the WebSocket connection whenever desired.  Clients
-     SHOULD NOT close the WebSocket connection arbitrarily
-## details        
+     * Each endpoint will see the status code sent by the other end as _The WebSocket Connection Close Code_
+* Servers MAY close the WebSocket connection whenever desired. Clients SHOULD NOT close the 
+WebSocket connection arbitrarily     
 ### status codes
 When closing an established connection (e.g., when sending a Close
    frame, after the opening handshake has completed), an endpoint MAY
@@ -248,22 +232,10 @@ or disconnect resource-hogging connections when suffering high load
          load on itself when attacked by pausing before closing the
          connection, as that will reduce the rate at which the client
          reconnects
-* Sec-WebSocket-Key
-    * random numbers selected randomly for each connection
 * A data center might have a server that responds to WebSocket
      requests with an appropriate handshake and then passes the connection
      to another server to actually process the data frames.
-     * For the
-          purposes of this specification, the "server" is the combination of
-          both computers
-* Reading the Client's Opening Handshake
-    *  When a client starts a WebSocket connection, it sends its part of the
-         opening handshake
-    * If
-         the server, while reading the handshake, finds that the client did
-         not send a handshake that matches the description below the server MUST stop
-         processing the client's handshake and return an HTTP response with an
-         appropriate error code (such as 400 Bad Request)
+
 
 * four types of events
     * open
@@ -298,19 +270,6 @@ or disconnect resource-hogging connections when suffering high load
                  application), and control frames (which are not intended to carry
                  data for the application but instead for protocol-level signaling,
                  such as to signal that the connection should be closed).
-# Closing Handshake
-* Either peer can send a control frame with data containing a specified
-     control sequence to begin the closing handshake
-* Upon receiving such a frame, the other peer sends a
-     Close frame in response, if it hasn't already sent one
-* Upon
-     receiving _that_ control frame, the first peer then closes the
-     connection, safe in the knowledge that no further data is
-     forthcoming
-* After sending a control frame indicating the connection should be
-     closed, a peer does not send any further data; after receiving a
-     control frame indicating the connection should be closed, a peer
-     discards any further data received
 # subprotocols
 * The client can request that the server use a specific subprotocol by
      including the |Sec-WebSocket-Protocol| field in its handshake.  If it
