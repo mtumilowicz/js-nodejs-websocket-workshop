@@ -276,13 +276,10 @@ or disconnect resource-hogging connections when suffering high load
      is specified, the server needs to include the same field and one of
      the selected subprotocol values in its response for the connection to
      be established.
-* For example, if Example Corporation were to create a
-     Chat subprotocol to be implemented by many servers around the Web,
-     they could name it "chat.example.com"
-    * If the Example Organization
-         called their competing subprotocol "chat.example.org", then the two
-         subprotocols could be implemented by servers simultaneously, with the
-         server dynamically selecting which subprotocol to use based on the
-         value sent by the client
+* For example, if Example Corporation were to create a Chat subprotocol to be implemented 
+by many servers around the Web, they could name it "chat.example.com"
+    * If the Example Organization called their competing subprotocol "chat.example.org", then the two
+         subprotocols could be implemented by servers simultaneously, with the server dynamically 
+         selecting which subprotocol to use based on the value sent by the client
 # 5.  Data Framing
 # 6.  Sending and Receiving Data
