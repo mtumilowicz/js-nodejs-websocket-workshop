@@ -292,6 +292,18 @@ a client MUST mask all frames that it sends to the server
 ## Base Framing Protocol
 1. FIN: 1 bit - If the bit is set, this fragment is the final bit in a message. 
 If the bit is clear, the message is not complete
+    * The primary purpose of fragmentation is to allow sending a message that is of unknown size when 
+    the message is started without having to buffer that message
+    * fragmented message must be all of the same type—no mixing and matching of binary and UTF-8 string 
+    data within a single message
+    * Control frames themselves MUST NOT be fragmented
+    * Control frames are used to communicate state about the WebSocket.
+    * The fragments of one message MUST NOT be interleaved between the fragments of another message 
+    unless an extension has been negotiated that can interpret the interleaving
+    * EXAMPLE: For a text message sent as three fragments 
+        * the first fragment would have an opcode of 0x1 and a FIN bit clear, 
+        * the second fragment would have an opcode of 0x0 and a FIN bit clear,
+        * the third fragment would have an opcode of 0x0 and a FIN bit that is set.
 1. RSV1, RSV2, RSV3: 1 bit each - MUST be 0 unless an extension is negotiated that defines meanings 
 for non-zero values.
 1. Opcode: 4 bits - Defines the interpretation of the "Payload data".
@@ -303,6 +315,7 @@ for non-zero values.
     * %x9 denotes a ping
     * %xA denotes a pong
     * %xB-F are reserved for further control frames
+    * Currently defined opcodes for control frames include 0x8 (Close), 0x9 (Ping), and 0xA (Pong).
 1. Mask: 1 bit - Defines whether the "Payload data" is masked. All frames sent from
             client to server have this bit set to 1.
 1. Payload length: 7 bits, 7+16 bits, or 7+64 bits
@@ -315,6 +328,16 @@ for non-zero values.
     * The payload length is the length of the "Extension data" + the length of the "Application data".  
 1. Masking-key: 0 or 4 bytes - All frames sent from the client to the server are masked by a 
 32-bit value that is contained within the frame.
+    * algorithm
+        ```
+        var unmask = function(mask, buffer) {
+            var payload = new Buffer(buffer.length);
+            for (var i=0; i<buffer.length; i++) {
+                payload[i] = mask[i % 4] ^ buffer[i];
+            }
+            return payload;
+        }
+        ```
 1. Payload data: (x+y) bytes - The "Payload data" is defined as "Extension data" concatenated with "Application data".
     1. Extension data:  x bytes
         * The "Extension data" is 0 bytes unless an extension has been
