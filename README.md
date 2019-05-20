@@ -142,36 +142,32 @@ Established_ and that the WebSocket Connection is in the OPEN state
          
 # Closing the Connection
 ## overview
-1. A closing of the WebSocket connection may be initiated by either endpoint (client or the server) - 
+1. a closing of the WebSocket connection may be initiated by either endpoint (client or the server) - 
 potentially simultaneously
 1. endpoint MUST send a Close control frame with |code| and |reason|
-1. Upon receiving such a frame, the other peer sends a Close frame in response, if it hasn't already sent one
-1. upon either sending or receiving a Close control frame, it is said that 
-   _The WebSocket Closing Handshake is Started_ and that the WebSocket connection is in the CLOSING state
-1. Once an endpoint has both sent and received a Close control frame, that endpoint SHOULD 
-_Close the WebSocket Connection_
+1. upon receiving such a frame, the other peer sends a Close frame in response, if it hasn't already sent one
+1. upon either sending or receiving a Close control frame, it is said that _The WebSocket Closing Handshake is 
+Started_ and that the WebSocket connection is in the CLOSING state
+1. once an endpoint has both sent and received a Close control frame, that endpoint SHOULD _Close the WebSocket 
+Connection_
 1. to _Close the WebSocket Connection_, an endpoint closes the underlying TCP connection
     * the underlying TCP connection, in most normal cases, SHOULD be closed first by the server
+    * servers MAY close the WebSocket connection whenever desired. Clients SHOULD NOT close the WebSocket connection 
+    arbitrarily
 1. when the underlying TCP connection is closed, it is said that _The WebSocket Connection is Closed_ 
    and that the WebSocket connection is in the CLOSED state
-   * If the TCP connection was closed after the WebSocket closing handshake 
-       was completed, the WebSocket connection is said to have been closed _cleanly_
+   * if the TCP connection was closed after the WebSocket closing handshake was completed, the WebSocket 
+   connection is said to have been closed _cleanly_
 ## details
-* After sending a control frame indicating the connection should be
-     closed, a peer does not send any further data; after receiving a
-     control frame indicating the connection should be closed, a peer
-     discards any further data received
-* Two endpoints may not agree on the value of _The WebSocket Connection Close Code_
-     * e.g.,
-        * remote endpoint sent a Close frame 
-        * but the local application has not yet read the data
-          containing the Close frame from its socket's receive buffer, 
-        * and the local application independently decided to close the connection and
-          send a Close frame, both endpoints will have sent and received a
-          Close frame and will not send further Close frames
-     * Each endpoint will see the status code sent by the other end as _The WebSocket Connection Close Code_
-* Servers MAY close the WebSocket connection whenever desired. Clients SHOULD NOT close the 
-WebSocket connection arbitrarily     
+* after sending a control frame indicating the connection should be closed, a peer does not send any further 
+data; after receiving a control frame indicating the connection should be closed, a peer discards any further data 
+received
+* two endpoints may not agree on the value of _The WebSocket Connection Close Code_
+    * remote endpoint sent a Close frame 
+    * but the local application has not yet read the data containing the Close frame from its socket's receive buffer, 
+    * and the local application independently decided to close the connection and send a Close frame, both endpoints 
+    will have sent and received a Close frame and will not send further Close frames
+    * each endpoint will see the status code sent by the other end as _The WebSocket Connection Close Code_
 ### status codes
 When closing an established connection (e.g., when sending a Close
    frame, after the opening handshake has completed), an endpoint MAY
