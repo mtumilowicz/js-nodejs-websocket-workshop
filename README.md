@@ -169,9 +169,8 @@ received
     will have sent and received a Close frame and will not send further Close frames
     * each endpoint will see the status code sent by the other end as _The WebSocket Connection Close Code_
 ### status codes
-When closing an established connection (e.g., when sending a Close
-   frame, after the opening handshake has completed), an endpoint MAY
-   indicate a reason for closure
+when closing an established connection (e.g., when sending a Close frame, after the opening handshake has completed), 
+an endpoint MAY indicate a reason for closure
    
 |Ranges         |Description   |
 |---            |---|
@@ -196,64 +195,60 @@ When closing an established connection (e.g., when sending a Close
 |1011   |server is terminating the connection because it encountered an unexpected condition that prevented it from fulfilling the request   |
 |1015   |failure to perform a TLS handshake (e.g., the server certificate can't be verified).   |
 # subprotocols
-* The client can request that the server use a specific subprotocol by
-     including the |Sec-WebSocket-Protocol| field in its handshake.  If it
-     is specified, the server needs to include the same field and one of
-     the selected subprotocol values in its response for the connection to
-     be established.
-* For example, if Example Corporation were to create a Chat subprotocol to be implemented 
-by many servers around the Web, they could name it "chat.example.com"
-    * If the Example Organization called their competing subprotocol "chat.example.org", then the two
-         subprotocols could be implemented by servers simultaneously, with the server dynamically 
-         selecting which subprotocol to use based on the value sent by the client
+* the client can request that the server use a specific subprotocol by including the `|Sec-WebSocket-Protocol|` 
+field in its handshake.  If it is specified, the server needs to include the same field and one of the selected 
+subprotocol values in its response for the connection to be established.
+* for example, if Example Corporation were to create a Chat subprotocol to be implemented by many servers around the 
+Web, they could name it "chat.example.com"
+    * if the Example Organization called their competing subprotocol "chat.example.org", then the two subprotocols 
+    could be implemented by servers simultaneously, with the server dynamically selecting which subprotocol to use 
+    based on the value sent by the client
 # Data Framing
-* In the WebSocket Protocol, data is transmitted using a sequence of frames
+* in the WebSocket Protocol, data is transmitted using a sequence of frames
     * the protocol is binary and not text
-* A WebSocket message is composed of one or more frames
-* To avoid confusing network intermediaries (such as intercepting proxies) and for security reasons 
+* a WebSocket message is composed of one or more frames
+* to avoid confusing network intermediaries (such as intercepting proxies) and for security reasons 
 a client MUST mask all frames that it sends to the server
-    * Note that masking is done whether or not the WebSocket Protocol is running over TLS.
-    * The server MUST close the connection upon receiving a frame that is not masked
+    * note that masking is done whether or not the WebSocket Protocol is running over TLS
+    * the server MUST close the connection upon receiving a frame that is not masked
 ## Base Framing Protocol
-1. FIN: 1 bit - If the bit is set, this fragment is the final bit in a message. 
-If the bit is clear, the message is not complete
-    * The primary purpose of fragmentation is to allow sending a message that is of unknown size when 
+1. **FIN: 1 bit** - if the bit is set, this fragment is the final bit in a message
+    * if the bit is clear, the message is not complete
+    * the primary purpose of fragmentation is to allow sending a message that is of unknown size when 
     the message is started without having to buffer that message
     * fragmented message must be all of the same type—no mixing and matching of binary and UTF-8 string 
     data within a single message
-    * Control frames themselves MUST NOT be fragmented
-    * Control frames are used to communicate state about the WebSocket.
-    * The fragments of one message MUST NOT be interleaved between the fragments of another message 
+    * control frames themselves MUST NOT be fragmented
+    * control frames are used to communicate state about the WebSocket.
+    * the fragments of one message MUST NOT be interleaved between the fragments of another message 
     unless an extension has been negotiated that can interpret the interleaving
     * EXAMPLE: For a text message sent as three fragments 
         * the first fragment would have an opcode of 0x1 and a FIN bit clear, 
         * the second fragment would have an opcode of 0x0 and a FIN bit clear,
-        * the third fragment would have an opcode of 0x0 and a FIN bit that is set.
-1. RSV1, RSV2, RSV3: 1 bit each - MUST be 0 unless an extension is negotiated that defines meanings 
-for non-zero values.
-1. Opcode: 4 bits - Defines the interpretation of the "Payload data".
-    * %x0 denotes a continuation frame
-    * %x1 denotes a text frame
-    * %x2 denotes a binary frame
-    * %x3-7 are reserved for further non-control frames
-    * %x8 denotes a connection close
-    * %x9 denotes a ping
-    * %xA denotes a pong
-    * %xB-F are reserved for further control frames
-    * Currently defined opcodes for control frames include 0x8 (Close), 0x9 (Ping), and 0xA (Pong).
-    * Currently defined opcodes for data frames include 0x1 (Text), 0x2 (Binary)
-1. Mask: 1 bit - Defines whether the "Payload data" is masked. All frames sent from
-            client to server have this bit set to 1.
-1. Payload length: 7 bits, 7+16 bits, or 7+64 bits
-    * if 0-125, that is the payload length  
-    * if 126, the following 2 bytes interpreted as a 16-bit unsigned integer are the payload length  
-    * If 127, the following 8 bytes interpreted as a 64-bit unsigned integer (the most significant bit 
-    MUST be 0) are the payload length.  
-    * Note that in all cases, the minimal number of bytes MUST be used to encode the length, for example, 
-    the length of a 124-byte-long string can't be encoded as the sequence 126, 0, 124.  
-    * The payload length is the length of the "Extension data" + the length of the "Application data".  
-1. Masking-key: 0 or 4 bytes - All frames sent from the client to the server are masked by a 
-32-bit value that is contained within the frame.
+        * the third fragment would have an opcode of 0x0 and a FIN bit that is set
+1. **RSV1, RSV2, RSV3: 1 bit each** - MUST be 0 unless an extension is negotiated that defines meanings 
+for non-zero values
+1. O**pcode: 4 bits** - defines the interpretation of the "Payload data"
+    * **%x0** denotes a continuation frame
+    * **%x1** denotes a text frame
+    * **%x2** denotes a binary frame
+    * **%x3-7** are reserved for further non-control frames
+    * **%x8** denotes a connection close
+    * **%x9** denotes a ping
+    * **%xA** denotes a pong
+    * **%xB-F** are reserved for further control frames
+    * currently defined opcodes for control frames include **0x8 (Close)**, **0x9 (Ping)**, and **0xA (Pong)**.
+    * currently defined opcodes for data frames include **0x1 (Text)**, **0x2 (Binary)**
+1. **Mask: 1 bit** - defines whether the "Payload data" is masked 
+    * all frames sent from client to server have this bit set to 1
+1. **Payload length: 7 bits, 7+16 bits, or 7+64 bits**
+    * if **0-125**, that is the payload length  
+    * if **126**, the following 2 bytes interpreted as a 16-bit unsigned integer
+    * if **127**, the following 8 bytes interpreted as a 64-bit unsigned integer
+    * note that in all cases, the minimal number of bytes MUST be used to encode the length  
+    * the payload length = "Extension data" + "Application data". 
+1. **Masking-key: 0 or 4 bytes** - all frames sent from the client to the server are masked by a 32-bit value that is 
+contained within the frame.
     * algorithm
         ```
         var unmask = function(mask, buffer) {
@@ -264,10 +259,10 @@ for non-zero values.
             return payload;
         }
         ```
-1. Payload data: (x+y) bytes - The "Payload data" is defined as "Extension data" concatenated with "Application data".
-    1. Extension data:  x bytes
-        * The "Extension data" is 0 bytes unless an extension has been
-                  negotiated.  
-        * Any extension MUST specify the length of the "Extension data", or how that length may be calculated, and how
-                  the extension use MUST be negotiated during the opening handshake.
-    1. Application data: y bytes - taking up the remainder of the frame after any "Extension data".
+1. **Payload data: (x+y) bytes** - the "Payload data" is defined as "Extension data" concatenated with 
+"Application data"
+    1. extension data: x bytes
+        * the "Extension data" is 0 bytes unless an extension has been negotiated
+        * any extension MUST specify the length of the "Extension data", or how that length may be calculated, and how
+        the extension use MUST be negotiated during the opening handshake
+    1. application data: y bytes - taking up the remainder of the frame after any "Extension data"
