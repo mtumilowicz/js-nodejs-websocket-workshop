@@ -139,70 +139,7 @@ that it has selected that protocol
     the client), the client MUST _Fail the WebSocket Connection_    
 1. if the server's response is validated as provided for above, it is said that _The WebSocket Connection is 
 Established_ and that the WebSocket Connection is in the OPEN state
-         
-# Closing the Connection
-## overview
-1. a closing of the WebSocket connection may be initiated by either endpoint (client or the server) - 
-potentially simultaneously
-1. endpoint MUST send a Close control frame with |code| and |reason|
-1. upon receiving such a frame, the other peer sends a Close frame in response, if it hasn't already sent one
-1. upon either sending or receiving a Close control frame, it is said that _The WebSocket Closing Handshake is 
-Started_ and that the WebSocket connection is in the CLOSING state
-1. once an endpoint has both sent and received a Close control frame, that endpoint SHOULD _Close the WebSocket 
-Connection_
-1. to _Close the WebSocket Connection_, an endpoint closes the underlying TCP connection
-    * the underlying TCP connection, in most normal cases, SHOULD be closed first by the server
-    * servers MAY close the WebSocket connection whenever desired. Clients SHOULD NOT close the WebSocket connection 
-    arbitrarily
-1. when the underlying TCP connection is closed, it is said that _The WebSocket Connection is Closed_ 
-   and that the WebSocket connection is in the CLOSED state
-   * if the TCP connection was closed after the WebSocket closing handshake was completed, the WebSocket 
-   connection is said to have been closed _cleanly_
-## details
-* after sending a control frame indicating the connection should be closed, a peer does not send any further 
-data; after receiving a control frame indicating the connection should be closed, a peer discards any further data 
-received
-* two endpoints may not agree on the value of _The WebSocket Connection Close Code_
-    * remote endpoint sent a Close frame 
-    * but the local application has not yet read the data containing the Close frame from its socket's receive buffer, 
-    * and the local application independently decided to close the connection and send a Close frame, both endpoints 
-    will have sent and received a Close frame and will not send further Close frames
-    * each endpoint will see the status code sent by the other end as _The WebSocket Connection Close Code_
-### status codes
-when closing an established connection (e.g., when sending a Close frame, after the opening handshake has completed), 
-an endpoint MAY indicate a reason for closure
-   
-|Ranges         |Description   |
-|---            |---|
-|0-999          |not used   |
-|1000-2999      |reserved  by protocol, pre-defined status codes   |
-|3000-3999      |reserved by libraries, frameworks, and applications, registered with IANA   |
-|4000-4999      |reserved for private use, not registered   |
 
-|Code   |Description   |
-|---    |---|
-|1000   |normal closure - the purpose for which the connection was established has been fulfilled   |
-|1001   |endpoint is "going away" - ex. server going down or a browser having navigated away from a page   |
-|1002   |protocol error   |
-|1003   |received a type of data it cannot accept - ex. text vs binary   |
-|1004   |not yet defined   |
-|1005   |MUST NOT be set as a status code - it is designated for use in applications expecting a status code to indicate that no status code was actually present   |
-|1006   |MUST NOT be set as a status code - It is designated for use in applications expecting a status code to indicate that the connection was closed abnormally, e.g., without sending or receiving a Close control fram   |
-|1007   |received data within a message that was not consistent with the type of the message - ex. non-UTF-8 data within a text message   |
-|1008   |received a message that violates its policy   |
-|1009   |message that is too big to process   |
-|1010   |(client) is terminating the connection because it has expected the server to negotiate one or more extension, but the server didn't return them in the response message of the WebSocket handshake Note that this status code is not used by the server, because it can fail the WebSocket handshake instead   |
-|1011   |server is terminating the connection because it encountered an unexpected condition that prevented it from fulfilling the request   |
-|1015   |failure to perform a TLS handshake (e.g., the server certificate can't be verified).   |
-# subprotocols
-* the client can request that the server use a specific subprotocol by including the `|Sec-WebSocket-Protocol|` 
-field in its handshake.  If it is specified, the server needs to include the same field and one of the selected 
-subprotocol values in its response for the connection to be established.
-* for example, if Example Corporation were to create a Chat subprotocol to be implemented by many servers around the 
-Web, they could name it "chat.example.com"
-    * if the Example Organization called their competing subprotocol "chat.example.org", then the two subprotocols 
-    could be implemented by servers simultaneously, with the server dynamically selecting which subprotocol to use 
-    based on the value sent by the client
 # Data Framing
 * in the WebSocket Protocol, data is transmitted using a sequence of frames
     * the protocol is binary and not text
@@ -266,3 +203,68 @@ contained within the frame.
         * any extension MUST specify the length of the "Extension data", or how that length may be calculated, and how
         the extension use MUST be negotiated during the opening handshake
     1. application data: y bytes - taking up the remainder of the frame after any "Extension data"
+
+# Closing the Connection
+## overview
+1. a closing of the WebSocket connection may be initiated by either endpoint (client or the server) - 
+potentially simultaneously
+1. endpoint MUST send a Close control frame with |code| and |reason|
+1. upon receiving such a frame, the other peer sends a Close frame in response, if it hasn't already sent one
+1. upon either sending or receiving a Close control frame, it is said that _The WebSocket Closing Handshake is 
+Started_ and that the WebSocket connection is in the CLOSING state
+1. once an endpoint has both sent and received a Close control frame, that endpoint SHOULD _Close the WebSocket 
+Connection_
+1. to _Close the WebSocket Connection_, an endpoint closes the underlying TCP connection
+    * the underlying TCP connection, in most normal cases, SHOULD be closed first by the server
+    * servers MAY close the WebSocket connection whenever desired. Clients SHOULD NOT close the WebSocket connection 
+    arbitrarily
+1. when the underlying TCP connection is closed, it is said that _The WebSocket Connection is Closed_ 
+   and that the WebSocket connection is in the CLOSED state
+   * if the TCP connection was closed after the WebSocket closing handshake was completed, the WebSocket 
+   connection is said to have been closed _cleanly_
+## details
+* after sending a control frame indicating the connection should be closed, a peer does not send any further 
+data; after receiving a control frame indicating the connection should be closed, a peer discards any further data 
+received
+* two endpoints may not agree on the value of _The WebSocket Connection Close Code_
+    * remote endpoint sent a Close frame 
+    * but the local application has not yet read the data containing the Close frame from its socket's receive buffer, 
+    * and the local application independently decided to close the connection and send a Close frame, both endpoints 
+    will have sent and received a Close frame and will not send further Close frames
+    * each endpoint will see the status code sent by the other end as _The WebSocket Connection Close Code_
+### status codes
+when closing an established connection (e.g., when sending a Close frame, after the opening handshake has completed), 
+an endpoint MAY indicate a reason for closure
+   
+|Ranges         |Description   |
+|---            |---|
+|0-999          |not used   |
+|1000-2999      |reserved  by protocol, pre-defined status codes   |
+|3000-3999      |reserved by libraries, frameworks, and applications, registered with IANA   |
+|4000-4999      |reserved for private use, not registered   |
+
+|Code   |Description   |
+|---    |---|
+|1000   |normal closure - the purpose for which the connection was established has been fulfilled   |
+|1001   |endpoint is "going away" - ex. server going down or a browser having navigated away from a page   |
+|1002   |protocol error   |
+|1003   |received a type of data it cannot accept - ex. text vs binary   |
+|1004   |not yet defined   |
+|1005   |MUST NOT be set as a status code - it is designated for use in applications expecting a status code to indicate that no status code was actually present   |
+|1006   |MUST NOT be set as a status code - It is designated for use in applications expecting a status code to indicate that the connection was closed abnormally, e.g., without sending or receiving a Close control fram   |
+|1007   |received data within a message that was not consistent with the type of the message - ex. non-UTF-8 data within a text message   |
+|1008   |received a message that violates its policy   |
+|1009   |message that is too big to process   |
+|1010   |(client) is terminating the connection because it has expected the server to negotiate one or more extension, but the server didn't return them in the response message of the WebSocket handshake Note that this status code is not used by the server, because it can fail the WebSocket handshake instead   |
+|1011   |server is terminating the connection because it encountered an unexpected condition that prevented it from fulfilling the request   |
+|1015   |failure to perform a TLS handshake (e.g., the server certificate can't be verified).   |
+
+# subprotocols
+* the client can request that the server use a specific subprotocol by including the `|Sec-WebSocket-Protocol|` 
+field in its handshake.  If it is specified, the server needs to include the same field and one of the selected 
+subprotocol values in its response for the connection to be established.
+* for example, if Example Corporation were to create a Chat subprotocol to be implemented by many servers around the 
+Web, they could name it "chat.example.com"
+    * if the Example Organization called their competing subprotocol "chat.example.org", then the two subprotocols 
+    could be implemented by servers simultaneously, with the server dynamically selecting which subprotocol to use 
+    based on the value sent by the client
