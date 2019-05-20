@@ -19,14 +19,14 @@
     * only relationship to HTTP is that its handshake is interpreted by HTTP servers as an Upgrade request
 * the intent of WebSockets is to provide a relatively simple protocol that can coexist with HTTP and 
 deployed HTTP infrastructure (such as proxies)
-* It's also designed in such a way that its
-     servers can share a port with HTTP servers, by having its handshake
-     be a valid HTTP Upgrade request
+* it's also designed in such a way that its servers can share a port with HTTP servers, by having its handshake 
+be a valid HTTP Upgrade request
 * by default, the WebSocket Protocol uses port 80 for regular WebSocket connections and port 443 for 
     WebSocket connections tunneled over Transport Layer Security (TLS)
 * supports text and binary data
 
 ## digression
+
 ### long polling
 1. server holds the request open
 1. waiting for a state change (e.g. new data emerges)
@@ -34,7 +34,7 @@ deployed HTTP infrastructure (such as proxies)
 1. when client receives response - it immediately sends another request and whole process repeats
 
 * drawback - it is not scalable: to maintain the session state for a given client, that state must either:
-    * must be sharable among all servers behind a load balancer – significant architectural complexity
+    * be sharable among all servers behind a load balancer – significant architectural complexity
     * or subsequent client requests within the same session must be routed to the same server to 
     which their original request was processed - contradiction of load-balancing
     
@@ -83,16 +83,16 @@ the client may want or need it
 |Sec-WebSocket-Protocol     |No             |protocols the client would like to speak, ordered by preference   |
 |Sec-WebSocket-Extensions   |No             |extensions the client would like to speak   |
 
-The request MAY include any other header fields, for example, cookies and/or authentication-related header fields
+the request MAY include any other header fields, for example, cookies and/or authentication-related header fields
 such as the |Authorization| header field, which are processed according to documents that define them
 
 ## details
 ### client
-1. To _Establish a WebSocket Connection_, a client opens a connection and sends a handshake as defined above.
+1. to _Establish a WebSocket Connection_, a client opens a connection and sends a handshake as defined above.
     * If |secure| header is true, the client MUST perform a TLS handshake just after opening the connection 
     and before sending the handshake data
         * all further communication on this channel MUST run through the encrypted tunnel 
-1. A connection is defined to initially be in a CONNECTING state.
+1. a connection is defined to initially be in a CONNECTING state.
     
     |State        |Value    |Description   |
     |---          |---      |---|
@@ -103,47 +103,42 @@ such as the |Authorization| header field, which are processed according to docum
 1. once the client's opening handshake has been sent, the client MUST wait for a response from the server 
    before sending any further data
 ### server
-1. If the server chooses to accept the incoming connection, it MUST reply with a valid HTTP response:
+1. if the server chooses to accept the incoming connection, it MUST reply with a valid HTTP response:
     * 101 response code, HTTP/1.1 101 Switching Protocols
     * required headers according to: [Opening handshake headers summary](#Opening-handshake-headers-summary)
 1. server selects one or none of the acceptable protocols and echoes that value in its handshake to indicate 
 that it has selected that protocol
     * |origin| - if the server does not validate the origin, it will accept connections from anywhere
-    * If the server does not wish to accept this connection, it MUST return an appropriate HTTP error code
+    * if the server does not wish to accept this connection, it MUST return an appropriate HTTP error code
       (e.g., 403 Forbidden) and abort the WebSocket handshake
     * otherwise the server considers the WebSocket connection to be established and that the WebSocket connection 
     is in the OPEN state and at this point, the server may begin sending (and receiving) data
 ### client
-1. The client MUST validate the server's response as follows:
-    * If the status code received from the server is not 101, the client handles the response per HTTP procedures
-        * In particular, the client might perform authentication if it receives a 401 status code; 
-        the server might redirect the client using a 3xx status code (but clients are not required to follow them)
+1. the client MUST validate the server's response as follows:
+    * if the status code received from the server is not 101, the client handles the response per HTTP procedures
+        * in particular, the client might perform authentication if it receives a 401 status code
+        * the server might redirect the client using a 3xx status code (but clients are not required to follow them)
     * required headers according to: [Opening handshake headers summary](#Opening-handshake-headers-summary)
-    * If the `|Sec-WebSocket-Accept|` contains a value other than the
-      base64-encoded SHA-1 of the concatenation of the `|Sec-WebSocket-
-      Key|` (as a string, not base64-decoded) with the string `"258EAFA5-
-      E914-47DA-95CA-C5AB0DC85B11"` - the client MUST _Fail the WebSocket Connection_
-        * The `|Sec-WebSocket-Key|` is used to filter unintended requests
+    * if the `|Sec-WebSocket-Accept|` contains a value other than the base64-encoded SHA-1 of the concatenation 
+    of the `|Sec-WebSocket-Key|` (as a string, not base64-decoded) with the string 
+    `"258EAFA5-E914-47DA-95CA-C5AB0DC85B11"` - the client MUST _Fail the WebSocket Connection_
+        * the `|Sec-WebSocket-Key|` is used to filter unintended requests
         * GUID - it is unlikely (possible, put with very small probability) that the server which is not 
         aware of Websockets will use it - it just ensures that server understands websockets protocol
         * prevent clients accidentally requesting websockets upgrade not expecting it (say, by adding 
-        corresponding headers manually and then expecting smth else). Sec-WebSocket-Key and other related 
-        headers are prohibited to be set using setRequestHeader method in browsers
-        * Imagine a transparent reverse-proxy server watching HTTP traffic go by. If it doesn't understand WS, it 
+        corresponding headers manually and then expecting something else). 
+        * `Sec-WebSocket-Key` and other related headers are prohibited to be set using `setRequestHeader` method in 
+        browsers
+        * imagine a transparent reverse-proxy server watching HTTP traffic go by. If it doesn't understand WS, it 
         could mistakenly cache a WS handshake and reply with a useless 101 to the next client
-    * If the response includes a `|Sec-WebSocket-Extensions|` header
-             field and this header field indicates the use of an extension
-             that was not present in the client's handshake (the server has
-             indicated an extension not requested by the client), the client
-             MUST _Fail the WebSocket Connection_
-    * If the response includes a |Sec-WebSocket-Protocol| header field
-             and this header field indicates the use of a subprotocol that was
-             not present in the client's handshake (the server has indicated a
-             subprotocol not requested by the client), the client MUST _Fail
-             the WebSocket Connection_    
-1. If the server's response is validated as provided for above, it is
-         said that _The WebSocket Connection is Established_ and that the
-         WebSocket Connection is in the OPEN state
+    * if the response includes a `|Sec-WebSocket-Extensions|` header field and this header field indicates the use 
+    of an extension that was not present in the client's handshake (the server has indicated an extension not requested 
+    by the client), the client MUST _Fail the WebSocket Connection_
+    * if the response includes a `|Sec-WebSocket-Protocol|` header field and this header field indicates the use of a 
+    subprotocol that was not present in the client's handshake (the server has indicated a subprotocol not requested by 
+    the client), the client MUST _Fail the WebSocket Connection_    
+1. if the server's response is validated as provided for above, it is said that _The WebSocket Connection is 
+Established_ and that the WebSocket Connection is in the OPEN state
          
 # Closing the Connection
 ## overview
