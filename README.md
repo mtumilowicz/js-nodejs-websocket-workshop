@@ -281,5 +281,44 @@ by many servers around the Web, they could name it "chat.example.com"
     * If the Example Organization called their competing subprotocol "chat.example.org", then the two
          subprotocols could be implemented by servers simultaneously, with the server dynamically 
          selecting which subprotocol to use based on the value sent by the client
-# 5.  Data Framing
-# 6.  Sending and Receiving Data
+# Data Framing
+* In the WebSocket Protocol, data is transmitted using a sequence of frames
+    * the protocol is binary and not text
+* A WebSocket message is composed of one or more frames
+* To avoid confusing network intermediaries (such as intercepting proxies) and for security reasons 
+a client MUST mask all frames that it sends to the server
+    * Note that masking is done whether or not the WebSocket Protocol is running over TLS.
+    * The server MUST close the connection upon receiving a frame that is not masked
+## Base Framing Protocol
+1. FIN: 1 bit - If the bit is set, this fragment is the final bit in a message. 
+If the bit is clear, the message is not complete
+1. RSV1, RSV2, RSV3: 1 bit each - MUST be 0 unless an extension is negotiated that defines meanings 
+for non-zero values.
+1. Opcode: 4 bits - Defines the interpretation of the "Payload data".
+    * %x0 denotes a continuation frame
+    * %x1 denotes a text frame
+    * %x2 denotes a binary frame
+    * %x3-7 are reserved for further non-control frames
+    * %x8 denotes a connection close
+    * %x9 denotes a ping
+    * %xA denotes a pong
+    * %xB-F are reserved for further control frames
+1. Mask: 1 bit - Defines whether the "Payload data" is masked. All frames sent from
+            client to server have this bit set to 1.
+1. Payload length: 7 bits, 7+16 bits, or 7+64 bits
+    * if 0-125, that is the payload length  
+    * if 126, the following 2 bytes interpreted as a 16-bit unsigned integer are the payload length  
+    * If 127, the following 8 bytes interpreted as a 64-bit unsigned integer (the most significant bit 
+    MUST be 0) are the payload length.  
+    * Note that in all cases, the minimal number of bytes MUST be used to encode the length, for example, 
+    the length of a 124-byte-long string can't be encoded as the sequence 126, 0, 124.  
+    * The payload length is the length of the "Extension data" + the length of the "Application data".  
+1. Masking-key: 0 or 4 bytes - All frames sent from the client to the server are masked by a 
+32-bit value that is contained within the frame.
+1. Payload data: (x+y) bytes - The "Payload data" is defined as "Extension data" concatenated with "Application data".
+    1. Extension data:  x bytes
+        * The "Extension data" is 0 bytes unless an extension has been
+                  negotiated.  
+        * Any extension MUST specify the length of the "Extension data", or how that length may be calculated, and how
+                  the extension use MUST be negotiated during the opening handshake.
+    1. Application data: y bytes - taking up the remainder of the frame after any "Extension data".
