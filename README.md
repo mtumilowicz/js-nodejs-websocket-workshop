@@ -316,6 +316,7 @@ for non-zero values.
     * %xA denotes a pong
     * %xB-F are reserved for further control frames
     * Currently defined opcodes for control frames include 0x8 (Close), 0x9 (Ping), and 0xA (Pong).
+    * Currently defined opcodes for data frames include 0x1 (Text), 0x2 (Binary)
 1. Mask: 1 bit - Defines whether the "Payload data" is masked. All frames sent from
             client to server have this bit set to 1.
 1. Payload length: 7 bits, 7+16 bits, or 7+64 bits
