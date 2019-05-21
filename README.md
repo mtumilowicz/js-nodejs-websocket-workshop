@@ -1,8 +1,11 @@
-# js-nodejs-websocket
+# js-nodejs-websocket-workshop-theory
 
+## refs
 * https://tools.ietf.org/html/rfc6455
 * https://www.ably.io/concepts/long-polling
 * https://www.amazon.com/WebSocket-Client-Server-Communications-Andrew-Lombardi-ebook/dp/B015D78JVQ
+
+## practice
 * https://github.com/mtumilowicz/js-nodejs-websocket-echo-server
 * https://github.com/mtumilowicz/js-nodejs-websocket-stock-server
 * https://github.com/mtumilowicz/js-nodejs-websocket-chat
