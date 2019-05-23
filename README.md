@@ -6,7 +6,7 @@
 * https://www.amazon.com/WebSocket-Client-Server-Communications-Andrew-Lombardi-ebook/dp/B015D78JVQ
 
 ## practice
-* **TBA:** nodejs websocket echo server workshop
+* https://github.com/mtumilowicz/js-nodejs-websocket-echo-server
 * **TBA:** nodejs websocket stock server workshop
 * **TBA:** nodejs websocket chat workshop
 
