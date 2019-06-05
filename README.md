@@ -8,7 +8,7 @@
 ## practice
 * https://github.com/mtumilowicz/js-nodejs-websocket-echo-server-workshop
 * https://github.com/mtumilowicz/js-nodejs-websocket-stock-server-workshop
-* **TBA:** nodejs websocket chat workshop
+* https://github.com/mtumilowicz/js-nodejs-websocket-chat-workshop
 
 # introduction
 * WebSocket is:
