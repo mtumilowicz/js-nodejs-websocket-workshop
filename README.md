@@ -147,7 +147,8 @@ Established_ and that the WebSocket Connection is in the OPEN state
 * in the WebSocket Protocol, data is transmitted using a sequence of frames
     * the protocol is binary and not text
 * a WebSocket message is composed of one or more frames
-* to avoid confusing network intermediaries (such as intercepting proxies) and for security reasons 
+* to avoid confusing network intermediaries (such as intercepting proxies from unwittingly treating WebSockets 
+data as a cacheable HTTP request) and for security reasons 
 a client MUST mask all frames that it sends to the server
     * note that masking is done whether or not the WebSocket Protocol is running over TLS
     * the server MUST close the connection upon receiving a frame that is not masked
