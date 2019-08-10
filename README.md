@@ -15,7 +15,7 @@
 * WebSocket is:
     * an event-driven, 
     * full-duplex (both directions),
-        * provides it without hacks (like long pooling, http2 push notifications, etc.)
+        * provides it without hacks (like long polling, http2 push notifications, etc.)
     * asynchronous communications channel
 * is an independent TCP-based protocol
     * single TCP connection for traffic in both directions
