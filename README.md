@@ -7,9 +7,9 @@
 * https://www.amazon.com/WebSocket-Client-Server-Communications-Andrew-Lombardi-ebook/dp/B015D78JVQ
 
 ## practice
-* https://github.com/mtumilowicz/js-nodejs-websocket-echo-server-workshop
-* https://github.com/mtumilowicz/js-nodejs-websocket-stock-server-workshop
-* https://github.com/mtumilowicz/js-nodejs-websocket-chat-workshop
+* js-nodejs-websocket-echo-server-workshop
+* js-nodejs-websocket-stock-server-workshop
+* js-nodejs-websocket-chat-workshop
 
 # introduction
 * WebSocket is:
