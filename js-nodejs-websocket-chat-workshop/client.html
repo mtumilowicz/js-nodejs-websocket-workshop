@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>js-nodejs-websocket-chat-workshop</title>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <script type="text/javascript" src="clientWebSocketWorkshop.js"></script>
+    <script type="text/javascript" src="functions.js"></script>
+
+</head>
+<body>
+<div class="vertical-center">
+    <div class="container">
+        <ul id="messages" class="list-unstyled"></ul>
+        <hr/>
+        <form role="form" onsubmit="sendMessage(); return false;">
+            <div class="form-group">
+                <input class="form-control" type="text" id="message" value="" autofocus/>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="sendMessage();">Send Message</button>
+
+            <button type="button" class="btn btn-danger" onclick="logout();">Logout</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
