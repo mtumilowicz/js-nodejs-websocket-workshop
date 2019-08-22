@@ -10,8 +10,8 @@ propagateMessage = (nickname, message) => {
         const clientSocket = clients[i].ws;
         if (clientSocket.readyState === WebSocket.OPEN) {
             clientSocket.send(JSON.stringify({
-                "nickname": nickname,
-                "message": message
+                nickname: nickname,
+                message: message
             }));
         }
     }
@@ -21,12 +21,12 @@ let clientIndex = 1;
 
 wss.on('connection', ws => {
     const client_uuid = uuid.v4();
-    const nickname = "User" + clientIndex;
+    const nickname = 'User' + clientIndex;
     clientIndex += 1;
     clients.push({
-        "id": client_uuid,
-        "ws": ws,
-        "nickname": nickname
+        id: client_uuid,
+        ws: ws,
+        nickname: nickname
     });
 
     propagateMessage(nickname, 'has connected');
