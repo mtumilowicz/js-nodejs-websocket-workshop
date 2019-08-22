@@ -6,7 +6,7 @@ const uuid = require('uuid');
 const clients = [];
 
 propagateMessage = (nickname, message) => {
-    for (let i = 0; i < clients.length; i++) {
+    for (let i in clients) {
         const clientSocket = clients[i].ws;
         // if clientSocket is open send data containing nickname and message
         // hint: readyState, WebSocket.OPEN
@@ -33,7 +33,7 @@ wss.on('connection', ws => {
     // hint: on('message', message => ...), propagateMessage
 
     const closeSocket = () => {
-        for (let i = 0; i < clients.length; i++) {
+        for (let i in clients) {
             // find client to close, hint: use id and client_uuid
             // push message that nickname 'has disconnected', hint: propagateMessage
             // remove client from clients, hint: splice
