@@ -3,10 +3,10 @@ const WebSocketServer = require('ws').Server;
 const uuid = require('uuid');
 
 const stocks = {
-    "APPLE": 178.0,
-    "ALPHABET": 1151.0,
-    "AMAZON": 1842.0,
-    "MICROSOFT": 127.0
+    APPLE: 178.0,
+    ALPHABET: 1151.0,
+    AMAZON: 1842.0,
+    MICROSOFT: 127.0
 };
 
 const randomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);

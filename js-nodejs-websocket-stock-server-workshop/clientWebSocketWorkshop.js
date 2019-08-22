@@ -1,10 +1,10 @@
 const ws = new WebSocket("ws://localhost:8181");
 
 const stocks = {
-    "APPLE": 0,
-    "ALPHABET": 0,
-    "AMAZON": 0,
-    "MICROSOFT": 0
+    APPLE: 0,
+    ALPHABET: 0,
+    AMAZON: 0,
+    MICROSOFT: 0
 };
 
 const changeStockEntry = (symbol, newValue) => {
