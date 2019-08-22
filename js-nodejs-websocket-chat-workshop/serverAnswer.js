@@ -23,7 +23,11 @@ wss.on('connection', ws => {
     const client_uuid = uuid.v4();
     const nickname = "User" + clientIndex;
     clientIndex += 1;
-    clients.push({"id": client_uuid, "ws": ws, "nickname": nickname});
+    clients.push({
+        "id": client_uuid,
+        "ws": ws,
+        "nickname": nickname
+    });
 
     propagateMessage(nickname, 'has connected');
 
