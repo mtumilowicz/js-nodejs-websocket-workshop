@@ -19,9 +19,3 @@
 * answers in:
     * `clientWebSocketAnswer.js`
     * `serverAnswer.js`
-    
-# theory in a nutshell
-* data is transmitted using a sequence of frames
-    * protocol is binary and not text
-* message is composed of one or more frames
-* client MUST mask all frames that it sends to the server
